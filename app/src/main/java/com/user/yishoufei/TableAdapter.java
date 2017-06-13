@@ -14,10 +14,10 @@ import java.util.List;
 
 public class TableAdapter extends BaseAdapter {
 
-    private List<Goods> list;
+    private List<ToDay_Trans> list;
     private LayoutInflater inflater;
 
-    public TableAdapter(MainActivity context, List<Goods> list){
+    public TableAdapter(MainActivity context, List<ToDay_Trans> list){
         this.list = list;
         inflater = LayoutInflater.from(context);
     }
@@ -44,7 +44,7 @@ public class TableAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Goods goods = (Goods) this.getItem(position);
+        ToDay_Trans today = (ToDay_Trans) this.getItem(position);
 
         ViewHolder viewHolder;
 
@@ -53,11 +53,10 @@ public class TableAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
 
             convertView = inflater.inflate(R.layout.list_item, null);
-            viewHolder.goodId = (TextView) convertView.findViewById(R.id.text_id);
-            viewHolder.goodName = (TextView) convertView.findViewById(R.id.text_goods_name);
-            viewHolder.goodCodeBar = (TextView) convertView.findViewById(R.id.text_codeBar);
-            viewHolder.goodNum = (TextView) convertView.findViewById(R.id.text_num);
-            viewHolder.goodCurrPrice = (TextView) convertView.findViewById(R.id.text_curPrice);
+            viewHolder.TodayCar_Num = (TextView) convertView.findViewById(R.id.text_today_name);
+            viewHolder.TodayStart_Time = (TextView) convertView.findViewById(R.id.text_codeBar);
+            viewHolder.TodayEnd_Time = (TextView) convertView.findViewById(R.id.text_num);
+            viewHolder.TodayMoney = (TextView) convertView.findViewById(R.id.text_curPrice);
             //viewHolder.goodMoney = (TextView) convertView.findViewById(R.id.text_money);
 
             convertView.setTag(viewHolder);
@@ -65,16 +64,14 @@ public class TableAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.goodId.setText(goods.getId());
-        viewHolder.goodId.setTextSize(13);
-        viewHolder.goodName.setText(goods.getGoodsName());
-        viewHolder.goodName.setTextSize(13);
-        viewHolder.goodCodeBar.setText(goods.getCodeBar());
-        viewHolder.goodCodeBar.setTextSize(13);
-        viewHolder.goodNum.setText(goods.getNum()+"");
-        viewHolder.goodNum.setTextSize(13);
-        viewHolder.goodCurrPrice.setText(goods.getCurPrice()+"");
-        viewHolder.goodCurrPrice.setTextSize(13);
+        viewHolder.TodayCar_Num.setText(today.getCar_Num());
+        viewHolder.TodayCar_Num.setTextSize(13);
+        viewHolder.TodayStart_Time.setText(today.getStart_Time().toString());
+        viewHolder.TodayStart_Time.setTextSize(13);
+        viewHolder.TodayEnd_Time.setText(today.getEnd_Time()+"");
+        viewHolder.TodayEnd_Time.setTextSize(13);
+        viewHolder.TodayMoney.setText(today.getMoney()+"");
+        viewHolder.TodayMoney.setTextSize(13);
         //viewHolder.goodMoney.setText(goods.getMoney()+"");
         //viewHolder.goodMoney.setTextSize(13);
 
@@ -82,12 +79,10 @@ public class TableAdapter extends BaseAdapter {
     }
 
     public static class ViewHolder{
-        public TextView goodId;
-        public TextView goodName;
-        public TextView goodCodeBar;
-        public TextView goodNum;
-        public TextView goodCurrPrice;
-        public TextView goodMoney;
+        public TextView TodayCar_Num;
+        public TextView TodayStart_Time;
+        public TextView TodayEnd_Time;
+        public TextView TodayMoney;
     }
 
 }

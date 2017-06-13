@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,7 +17,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.litepal.LitePal;
+import org.litepal.crud.DataSupport;
 import org.litepal.tablemanager.Connector;
+import org.litepal.util.Const;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -65,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Connector.getDatabase();
+        LitePal.getDatabase();
         ActionBar actionBar = getSupportActionBar();//隐藏默认的控件
         if (actionBar !=null){
             actionBar.hide();
@@ -78,15 +82,39 @@ public class MainActivity extends AppCompatActivity {
         input_message=(EditText)findViewById(R.id.input_message) ;
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
         tableTitle.setBackgroundColor(Color.rgb(177, 173, 172));
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
         Start_Money.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View v){
-                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-                ToDay_Trans toDay_trans = new ToDay_Trans(input_message.getText().toString(),new Date(),new Date(),11);
+
+                ToDay_Trans add = new ToDay_Trans(input_message.getText().toString(),new Date(),new Date(),11);
+                add.save();
+                Log.d("aaaaa",add.getCar_Num());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<ToDay_Trans> list = DataSupport.findAll(ToDay_Trans.class);
+                        for (ToDay_Trans toDay_trans: list){
+                            list.add(new ToDay_Trans(toDay_trans.getCar_Num(),toDay_trans.getStart_Time(),
+                                    toDay_trans.getEnd_Time(),11));
+                        }
+                        ListView tableListView = (ListView) findViewById(R.id.list);
+                        TableAdapter adapter = new TableAdapter(MainActivity.this, list);
+                        tableListView.setAdapter(adapter);
+
+                    }
+                }).start();
+
+
+
+
             }
         });
         //设置表格标题的背景颜色
-        List<Goods> list = new ArrayList<Goods>();
+//        List<Goods> list = new ArrayList<Goods>();
+
 //        list.add(new Goods("01", "浙C.R5180", "12:12",13,23,23));
 //        list.add(new Goods("02", "鱼翅", "31312323223",34,23,23));
 //        list.add(new Goods("03", "农夫山泉", "12",34,23,23));
@@ -103,13 +131,9 @@ public class MainActivity extends AppCompatActivity {
 //        list.add(new Goods("09", "达利园超时牛奶", "3234345",34,23,23));
 //        list.add(new Goods("09", "达利奶====", "3234345",34,23,23));
 
-        ListView tableListView = (ListView) findViewById(R.id.list);
 
-        TableAdapter adapter = new TableAdapter(MainActivity.this, list);
 
-        tableListView.setAdapter(adapter);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event){

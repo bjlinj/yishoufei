@@ -1,5 +1,7 @@
 package com.user.yishoufei;
 
+import org.litepal.crud.DataSupport;
+
 import java.sql.Time;
 import java.util.Date;
 
@@ -7,7 +9,7 @@ import java.util.Date;
  * Created by User on 2017/6/13.
  */
 
-public class ToDay_Trans {
+public class ToDay_Trans extends DataSupport {
     private String Car_Num;
     private Date Start_Time;
     private Date End_Time;
