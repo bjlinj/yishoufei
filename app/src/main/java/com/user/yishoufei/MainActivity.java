@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         list.add(new Goods("09", "达利园超时牛奶", "3234345",34,23,23));
         list.add(new Goods("09", "达利园超时牛奶", "3234345",34,23,23));
         list.add(new Goods("09", "达利园超时牛奶", "3234345",34,23,23));
+        list.add(new Goods("09", "达利奶", "3234345",34,23,23));
 
         ListView tableListView = (ListView) findViewById(R.id.list);
 
