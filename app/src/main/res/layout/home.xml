@@ -8,13 +8,13 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp">
     <EditText
-        android:id="@+id/input_message"
+        android:id="@+id/Input_Mess_Start"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:hint="输入车牌号开始计费"/>
     <Button
-        android:id="@+id/Start_Money"
+        android:id="@+id/Button_Start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="开始计费" />
@@ -26,13 +26,13 @@
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp">
     <EditText
-        android:id="@+id/input_message1"
+        android:id="@+id/Input_Mess_End"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:hint="选择车牌号结束计费"/>
     <Button
-        android:id="@+id/button_02"
+        android:id="@+id/Button_End"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="结束计费" />
