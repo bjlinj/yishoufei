@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -105,8 +106,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String input_mess_start = Input_Mess_Start.getText().toString();
-                Log.d("input_mess_start",Input_Mess_Start.getText().toString());
-                if (input_mess_start.length()==0) {
+                Log.d("input_mess_start", Input_Mess_Start.getText().toString());
+                if (input_mess_start.length() == 0) {
                     Toast.makeText(MainActivity.this, "请输入车牌号", Toast.LENGTH_SHORT).show();
                 } else {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
@@ -135,6 +136,41 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(MainActivity.this, today.getCar_Num(), Toast.LENGTH_SHORT).show();
             }
         });
+        //列表长按事件
+        tableListView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View v,
+                                            ContextMenu.ContextMenuInfo menuInfo) {
+                menu.add(0, 0, 0, "结束计费");
+                menu.add(0, 1, 0, "删除");
+
+            }
+            public boolean onContextItemSelected(MenuItem item) {
+                tableListView.AdapterContextMenuInfo info = (tableListView.AdapterContextMenuInfo) item
+                        .getMenuInfo();
+                MID = (int) info.id;// 这里的info.id对应的就是数据库中_id的值
+                switch (item.getItemId()) {
+                    case 0:
+                        // 添加操作
+                        Toast.makeText(ListOnLongClickActivity.this,
+                                "添加",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
+                        // 删除操作
+                        break;
+                    case 2:
+                        // 删除ALL操作
+                        break;
+                    default:
+                        break;
+                }
+                return MainActivity.super.onContextItemSelected(item);
+            }
+        });
+
+
 
 
         //设置表格标题的背景颜色
