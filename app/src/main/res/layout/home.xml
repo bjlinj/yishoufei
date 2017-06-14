@@ -14,7 +14,7 @@
         android:layout_weight="1"
         android:hint="输入车牌号开始计费"/>
     <Button
-        android:id="@+id/button_01"
+        android:id="@+id/Start_Money"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="开始计费" />

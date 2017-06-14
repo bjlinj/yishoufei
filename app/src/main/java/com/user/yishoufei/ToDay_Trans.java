@@ -1,18 +1,21 @@
 package com.user.yishoufei;
 
+import org.litepal.crud.DataSupport;
+
 import java.sql.Time;
+import java.util.Date;
 
 /**
  * Created by User on 2017/6/13.
  */
 
-public class ToDay_Trans {
+public class ToDay_Trans extends DataSupport {
     private String Car_Num;
-    private Time Start_Time;
-    private Time End_Time;
+    private Date Start_Time;
+    private Date End_Time;
     private float Money;
 
-    public ToDay_Trans(String car_Num, Time start_Time, Time end_Time, float money) {
+    public ToDay_Trans(String car_Num, Date start_Time, Date end_Time, float money) {
         Car_Num = car_Num;
         Start_Time = start_Time;
         End_Time = end_Time;
@@ -27,7 +30,7 @@ public class ToDay_Trans {
         Car_Num = car_Num;
     }
 
-    public Time getStart_Time() {
+    public Date getStart_Time() {
         return Start_Time;
     }
 
@@ -35,7 +38,7 @@ public class ToDay_Trans {
         Start_Time = start_Time;
     }
 
-    public Time getEnd_Time() {
+    public Date getEnd_Time() {
         return End_Time;
     }
 
