@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,12 +42,15 @@ public class MainActivity extends AppCompatActivity {
     private Button Start_Money;
     private EditText Input_Mess_Start;
     private EditText Input_Mess_End;
-    public List<ToDay_Trans> list;
+    private List<ToDay_Trans> list;
+    private ListView tableListView;
 
     //刷新列表
-    public List<ToDay_Trans> fresh() {
+    public void fresh() {
         list = DataSupport.order("Start_Time desc").find(ToDay_Trans.class);
-        return list;
+        tableListView = (ListView) findViewById(R.id.list);
+        TableAdapter adapter = new TableAdapter(MainActivity.this, list);
+        tableListView.setAdapter(adapter);
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -94,9 +98,7 @@ public class MainActivity extends AppCompatActivity {
         Input_Mess_End = (EditText) findViewById(R.id.Input_Mess_End);
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
         tableTitle.setBackgroundColor(Color.rgb(177, 173, 172));
-        ListView tableListView = (ListView) findViewById(R.id.list);
-        TableAdapter adapter = new TableAdapter(MainActivity.this, fresh());
-        tableListView.setAdapter(adapter);
+        fresh();
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -117,10 +119,8 @@ public class MainActivity extends AppCompatActivity {
                             formatter.format(curDate), "", "");
                     add.save();
                     //Log.d("aaaaa",add.getCar_Num());
-                    List<ToDay_Trans> list = fresh();
-                    ListView tableListView = (ListView) findViewById(R.id.list);
-                    TableAdapter adapter = new TableAdapter(MainActivity.this, list);
-                    tableListView.setAdapter(adapter);
+                    fresh();
+
                     Input_Mess_Start.setText("");
                 }
             }
@@ -146,29 +146,26 @@ public class MainActivity extends AppCompatActivity {
                 menu.add(0, 1, 0, "删除");
 
             }
-            public boolean onContextItemSelected(MenuItem item) {
-                tableListView.AdapterContextMenuInfo info = (tableListView.AdapterContextMenuInfo) item
-                        .getMenuInfo();
-                MID = (int) info.id;// 这里的info.id对应的就是数据库中_id的值
-                switch (item.getItemId()) {
-                    case 0:
-                        // 添加操作
-                        Toast.makeText(ListOnLongClickActivity.this,
-                                "添加",
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                    case 1:
-                        // 删除操作
-                        break;
-                    case 2:
-                        // 删除ALL操作
-                        break;
-                    default:
-                        break;
-                }
-                return MainActivity.super.onContextItemSelected(item);
-            }
+
         });
+    }
+    @Override
+    public boolean onContextItemSelected(MenuItem menu){
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menu.getMenuInfo();
+        ToDay_Trans today= list.get(info.position);
+        try{
+            switch(menu.getItemId()){
+                case 0:
+                    Toast.makeText(MainActivity.this, today.getId(), Toast.LENGTH_LONG).show();
+                    break;
+                case 1:
+                    Toast.makeText(MainActivity.this, "第二项被按下", Toast.LENGTH_LONG).show();
+                    break;
+            }
+        }catch(Exception e){}
+        return super.onContextItemSelected(menu);
+
+    }
 
 
 
@@ -193,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
 //        list.add(new Goods("09", "达利奶====", "3234345",34,23,23));
 
 
-    }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

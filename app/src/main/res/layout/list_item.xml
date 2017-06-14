@@ -21,7 +21,13 @@
         <!--android:layout_width="1.5dip"-->
         <!--android:layout_height="fill_parent"-->
         <!--android:background="#B4B3B3"/>-->
+<view
+    android:id="@+id/id"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:visibility="gone">
 
+</view>
     <TextView
         android:id="@+id/text_today_name"
         android:layout_width="0dip"
@@ -48,7 +54,6 @@
         android:paddingBottom="10dip"
         android:textColor="#000000"
         android:paddingTop="10dip"
-        android:singleLine="true"
         android:textSize="15sp"
         android:gravity="center"
         android:text="开始时间" />
@@ -66,7 +71,6 @@
         android:paddingBottom="10dip"
         android:paddingTop="10dip"
         android:textColor="#000000"
-        android:singleLine="true"
         android:textSize="15sp"
         android:gravity="center"
         android:text="结束时间" />

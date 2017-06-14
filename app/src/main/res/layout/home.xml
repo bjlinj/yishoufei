@@ -12,6 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:maxLines="1"
         android:hint="输入车牌号开始计费"/>
     <Button
         android:id="@+id/Button_Start"
@@ -30,6 +31,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:maxLines="1"
         android:hint="选择车牌号结束计费"/>
     <Button
         android:id="@+id/Button_End"
