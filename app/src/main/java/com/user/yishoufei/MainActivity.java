@@ -82,34 +82,27 @@ public class MainActivity extends AppCompatActivity {
         input_message=(EditText)findViewById(R.id.input_message) ;
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
         tableTitle.setBackgroundColor(Color.rgb(177, 173, 172));
+        List<ToDay_Trans> list = DataSupport.findAll(ToDay_Trans.class);
+        ListView tableListView = (ListView) findViewById(R.id.list);
+        TableAdapter adapter = new TableAdapter(MainActivity.this, list);
+        tableListView.setAdapter(adapter);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         Start_Money.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick (View v){
-
-                ToDay_Trans add = new ToDay_Trans(input_message.getText().toString(),new Date(),new Date(),11);
+                SimpleDateFormat    formatter    =   new    SimpleDateFormat    ("yyyyMMdd HH:mm:ss");
+                Date    curDate    =   new    Date(System.currentTimeMillis());
+                ToDay_Trans add = new ToDay_Trans(input_message.getText().toString(),
+                        formatter.format(curDate),new Date(),11);
                 add.save();
                 Log.d("aaaaa",add.getCar_Num());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<ToDay_Trans> list = DataSupport.findAll(ToDay_Trans.class);
-                        for (ToDay_Trans toDay_trans: list){
-                            list.add(new ToDay_Trans(toDay_trans.getCar_Num(),toDay_trans.getStart_Time(),
-                                    toDay_trans.getEnd_Time(),11));
-                        }
+                        List<ToDay_Trans> list = DataSupport.order("Start_Time desc").find(ToDay_Trans.class);
                         ListView tableListView = (ListView) findViewById(R.id.list);
                         TableAdapter adapter = new TableAdapter(MainActivity.this, list);
                         tableListView.setAdapter(adapter);
-
-                    }
-                }).start();
-
-
-
-
+                input_message.setText("");
             }
         });
         //设置表格标题的背景颜色

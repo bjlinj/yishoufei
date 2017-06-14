@@ -11,11 +11,11 @@ import java.util.Date;
 
 public class ToDay_Trans extends DataSupport {
     private String Car_Num;
-    private Date Start_Time;
+    private String Start_Time;
     private Date End_Time;
     private float Money;
 
-    public ToDay_Trans(String car_Num, Date start_Time, Date end_Time, float money) {
+    public ToDay_Trans(String car_Num, String start_Time, Date end_Time, float money) {
         Car_Num = car_Num;
         Start_Time = start_Time;
         End_Time = end_Time;
@@ -30,11 +30,11 @@ public class ToDay_Trans extends DataSupport {
         Car_Num = car_Num;
     }
 
-    public Date getStart_Time() {
+    public String getStart_Time() {
         return Start_Time;
     }
 
-    public void setStart_Time(Time start_Time) {
+    public void setStart_Time(String start_Time) {
         Start_Time = start_Time;
     }
 
