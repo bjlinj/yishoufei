@@ -1,5 +1,6 @@
 package com.user.yishoufei;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +8,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -50,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText Input_Mess_End;
     private List<ToDay_Trans> list;
     private ListView tableListView;
-    private ImageView ivDeleteText;
-    public static final int UPDATE_TEXT = 1;
+    private long get_id;
+
     //刷新列表
     public void fresh() {
         list = DataSupport.order("Start_Time desc").find(ToDay_Trans.class);
@@ -60,33 +62,26 @@ public class MainActivity extends AppCompatActivity {
         TableAdapter adapter = new TableAdapter(MainActivity.this, list);
         tableListView.setAdapter(adapter);
     }
-//按条件模糊查询
+
+    //按条件模糊查询
     public void selfresh(String s) {
-        list = DataSupport.order("Start_Time desc").where("Car_Num like ? ","%" + s + "%").find(ToDay_Trans.class);
+        list = DataSupport.order("Start_Time desc").where("Car_Num like ? ", "%" + s + "%").find(ToDay_Trans.class);
         tableListView = (ListView) findViewById(R.id.list);
         //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
         TableAdapter adapter = new TableAdapter(MainActivity.this, list);
         tableListView.setAdapter(adapter);
     }
+    //用ID精确查找
+    public List<ToDay_Trans> sreachbyid(long s) {
+        list = DataSupport.findAll(ToDay_Trans.class,s);
+        return list;
+    }
+
     //按ID删除数据
     public void delfresh(long s) {
-       DataSupport.delete(ToDay_Trans.class,s );
+        DataSupport.delete(ToDay_Trans.class, s);
         fresh();//删除之后刷新一下数据
     }
-/*    private Handler handler = new Handler() {
-
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case UPDATE_TEXT:
-                    // 在这里可以进行UI操作
-                    fresh();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-    };*/
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -146,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String input_mess_start = Input_Mess_Start.getText().toString();
-                Log.d("input_mess_start", Input_Mess_Start.getText().toString());
+                //Log.d("input_mess_start", Input_Mess_Start.getText().toString());
                 if (input_mess_start.length() == 0) {
                     Toast.makeText(MainActivity.this, "请输入车牌号", Toast.LENGTH_SHORT).show();
                 } else {
@@ -185,22 +180,12 @@ public class MainActivity extends AppCompatActivity {
                  * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
                  * 所以这里我们就需要加上数据的修改的动作了。*/
 
-                if(s.length() == 0){
+                if (s.length() == 0) {
                     //ivDeleteText.setVisibility(View.GONE);//当文本框为空时，则叉叉消失
                     selfresh(Input_Mess_End.getText().toString());
 
-                }
-                else {
-                    //ivDeleteText.setVisibility(View.VISIBLE);//当文本框不为空时，出现叉叉
-                    //selfresh(Input_Mess_End.getText().toString());
-                    /*new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Message message = new Message();
-                            message.what=UPDATE_TEXT;
-                            handler.sendMessage(message);
-                        }
-                    }).start();*/
+                } else {
+
                     selfresh(Input_Mess_End.getText().toString());
 
                     //Toast.makeText(MainActivity.this, Input_Mess_End.getText(), Toast.LENGTH_SHORT).show();
@@ -210,28 +195,49 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //结束计费
- /*       End_Money.setOnClickListener(new View.OnClickListener() {
+        End_Money.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String input_mess_start = Input_Mess_End.getText().toString();
-                Log.d("input_mess_start", Input_Mess_End.getText().toString());
-                if (input_mess_start.length() == 0) {
+                String input_mess_end = Input_Mess_End.getText().toString();
+                list=sreachbyid(get_id);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+                Date curDate = new Date(System.currentTimeMillis());
+                if (input_mess_end.length() == 0) {
                     Toast.makeText(MainActivity.this, "请输入或者选择车牌号", Toast.LENGTH_SHORT).show();
                 } else {
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+                    //弹出通知框
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                    dialog.setTitle("本次收费小票");
+                    String start=list.get(0).getStart_Time();
+                    String end=formatter.format(curDate);
+                    IntervalTime intervaltime= new  IntervalTime();
+                    String interval =intervaltime.get_IntervalTime(start,end);
+                        list.get(0).getCar_Num();
+                    dialog.setMessage("\n\n车牌号码："+list.get(0).getCar_Num()+"\n\n"+"开始时间："+start
+                            +"\n\n"+"结束时间："+ end+"\n\n"+"持续时间："+interval);
+                    dialog.setCancelable(false);
+                    dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    dialog.show();
+                    fresh();
+                    Input_Mess_End.setText("");
+                    //写入数据库
+/*                    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
                     Date curDate = new Date(System.currentTimeMillis());
                     ToDay_Trans update = new ToDay_Trans();
 
                     ToDay_Trans add = new ToDay_Trans(Input_Mess_End.getText().toString(),
                             formatter.format(curDate), "", "");
-                    add.save();
+                    add.save();*/
                     //Log.d("aaaaa",add.getCar_Num());
-                    fresh();
 
-                    Input_Mess_End.setText("");
                 }
             }
-        });*/
+        });
         //添加列表点击事件
         tableListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -239,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
                                     int position, long id) {
                 ToDay_Trans today = list.get(position);
                 Input_Mess_End.setText(today.getCar_Num());
+                get_id=today.getId();
                 //Toast.makeText(MainActivity.this, today.getCar_Num(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -254,29 +261,29 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
+
     @Override
-    public boolean onContextItemSelected(MenuItem menu){
+    public boolean onContextItemSelected(MenuItem menu) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menu.getMenuInfo();
-        ToDay_Trans today= list.get(info.position);
-        try{
-            switch(menu.getItemId()){
+        ToDay_Trans today = list.get(info.position);
+        try {
+            switch (menu.getItemId()) {
                 case 0:
-                    Toast.makeText(MainActivity.this,today.getId()+"", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, today.getId() + "", Toast.LENGTH_LONG).show();
                     break;
                 case 1:
                     delfresh(today.getId());
                     Toast.makeText(MainActivity.this, "删除", Toast.LENGTH_LONG).show();
                     break;
             }
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
         return super.onContextItemSelected(menu);
 
     }
 
 
-
-
-        //设置表格标题的背景颜色
+    //设置表格标题的背景颜色
 //        List<Goods> list = new ArrayList<Goods>();
 
 //        list.add(new Goods("01", "浙C.R5180", "12:12",13,23,23));
@@ -294,8 +301,6 @@ public class MainActivity extends AppCompatActivity {
 //        list.add(new Goods("09", "达利园超时牛奶", "3234345",34,23,23));
 //        list.add(new Goods("09", "达利园超时牛奶", "3234345",34,23,23));
 //        list.add(new Goods("09", "达利奶====", "3234345",34,23,23));
-
-
 
 
     @Override
