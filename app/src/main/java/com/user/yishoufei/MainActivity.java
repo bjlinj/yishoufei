@@ -3,6 +3,7 @@ package com.user.yishoufei;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
@@ -50,15 +51,37 @@ public class MainActivity extends AppCompatActivity {
     private List<ToDay_Trans> list;
     private ListView tableListView;
     private ImageView ivDeleteText;
-    private Handler myhandler = new Handler();
-
+    public static final int UPDATE_TEXT = 1;
     //刷新列表
     public void fresh() {
         list = DataSupport.order("Start_Time desc").find(ToDay_Trans.class);
         tableListView = (ListView) findViewById(R.id.list);
-        TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.id.list , list);
+        //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
+        TableAdapter adapter = new TableAdapter(MainActivity.this, list);
         tableListView.setAdapter(adapter);
     }
+//按条件模糊查询
+    public void selfresh(String s) {
+        list = DataSupport.where("Car_Num like ? ","%" + s + "%").find(ToDay_Trans.class);
+        tableListView = (ListView) findViewById(R.id.list);
+        //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
+        TableAdapter adapter = new TableAdapter(MainActivity.this, list);
+        tableListView.setAdapter(adapter);
+    }
+/*    private Handler handler = new Handler() {
+
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case UPDATE_TEXT:
+                    // 在这里可以进行UI操作
+                    fresh();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    };*/
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -104,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
         End_Money = (Button) findViewById(R.id.Button_End);
         Input_Mess_Start = (EditText) findViewById(R.id.Input_Mess_Start);
         Input_Mess_End = (EditText) findViewById(R.id.Input_Mess_End);
+        ivDeleteText =(ImageView) findViewById(R.id.ivDeleteText);
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
         //tableTitle.setBackgroundColor(Color.rgb(177, 173, 172));
         tableTitle.setBackgroundColor(Color.rgb(69, 40, 235));
@@ -133,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-/*
         //实现收费输入框动态搜索
         Input_Mess_End.addTextChangedListener(new TextWatcher() {
 
@@ -153,35 +176,33 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 // TODO Auto-generated method stub
-                *//**这是文本框改变之后 会执行的动作
+/*                *这是文本框改变之后 会执行的动作
                  * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
-                 * 所以这里我们就需要加上数据的修改的动作了。
-                 *//*
+                 * 所以这里我们就需要加上数据的修改的动作了。*/
+
                 if(s.length() == 0){
-                    ivDeleteText.setVisibility(View.GONE);//当文本框为空时，则叉叉消失
+                    //ivDeleteText.setVisibility(View.GONE);//当文本框为空时，则叉叉消失
+                    selfresh(Input_Mess_End.getText().toString());
+
                 }
                 else {
-                    ivDeleteText.setVisibility(View.VISIBLE);//当文本框不为空时，出现叉叉
+                    //ivDeleteText.setVisibility(View.VISIBLE);//当文本框不为空时，出现叉叉
+                    //selfresh(Input_Mess_End.getText().toString());
+                    /*new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Message message = new Message();
+                            message.what=UPDATE_TEXT;
+                            handler.sendMessage(message);
+                        }
+                    }).start();*/
+                    selfresh(Input_Mess_End.getText().toString());
+
+                    Toast.makeText(MainActivity.this, Input_Mess_End.getText(), Toast.LENGTH_SHORT).show();
                 }
 
-                myhandler.post(eChanged);
             }
         });
-        Runnable eChanged = new Runnable() {
-
-            @Override
-            public void run() {
-                // TODO Auto-generated method stub
-                String data = Input_Mess_End.getText().toString();
-
-                mData.clear();//先要清空，不然会叠加
-
-                getmDataSub(mData, data);//获取更新数据
-
-                adapter.notifyDataSetChanged();//更新
-
-            }
-        };*/
 
         //结束计费
  /*       End_Money.setOnClickListener(new View.OnClickListener() {

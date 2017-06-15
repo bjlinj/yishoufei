@@ -1,14 +1,13 @@
 package com.user.yishoufei;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.user.yishoufei.R;
-import com.user.yishoufei.ToDay_Trans;
 
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class TodayAdapter extends ArrayAdapter<ToDay_Trans> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ToDay_Trans today = getItem(position); // 获取当前项的Fruit实例
+        ToDay_Trans today = getItem(position); // 获取当前项的ToDay_Trans实例
         View view;
         ViewHolder viewHolder;
         if (convertView == null) {
