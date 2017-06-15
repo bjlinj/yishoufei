@@ -62,11 +62,16 @@ public class MainActivity extends AppCompatActivity {
     }
 //按条件模糊查询
     public void selfresh(String s) {
-        list = DataSupport.where("Car_Num like ? ","%" + s + "%").find(ToDay_Trans.class);
+        list = DataSupport.order("Start_Time desc").where("Car_Num like ? ","%" + s + "%").find(ToDay_Trans.class);
         tableListView = (ListView) findViewById(R.id.list);
         //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
         TableAdapter adapter = new TableAdapter(MainActivity.this, list);
         tableListView.setAdapter(adapter);
+    }
+    //按ID删除数据
+    public void delfresh(long s) {
+       DataSupport.delete(ToDay_Trans.class,s );
+        fresh();//删除之后刷新一下数据
     }
 /*    private Handler handler = new Handler() {
 
@@ -127,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         End_Money = (Button) findViewById(R.id.Button_End);
         Input_Mess_Start = (EditText) findViewById(R.id.Input_Mess_Start);
         Input_Mess_End = (EditText) findViewById(R.id.Input_Mess_End);
-        ivDeleteText =(ImageView) findViewById(R.id.ivDeleteText);
+        //ivDeleteText =(ImageView) findViewById(R.id.ivDeleteText);
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
         //tableTitle.setBackgroundColor(Color.rgb(177, 173, 172));
         tableTitle.setBackgroundColor(Color.rgb(69, 40, 235));
@@ -198,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
                     }).start();*/
                     selfresh(Input_Mess_End.getText().toString());
 
-                    Toast.makeText(MainActivity.this, Input_Mess_End.getText(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, Input_Mess_End.getText(), Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -245,7 +250,6 @@ public class MainActivity extends AppCompatActivity {
                                             ContextMenu.ContextMenuInfo menuInfo) {
                 menu.add(0, 0, 0, "结束计费");
                 menu.add(0, 1, 0, "删除");
-
             }
 
         });
@@ -258,10 +262,10 @@ public class MainActivity extends AppCompatActivity {
             switch(menu.getItemId()){
                 case 0:
                     Toast.makeText(MainActivity.this,today.getId()+"", Toast.LENGTH_LONG).show();
-
                     break;
                 case 1:
-                    Toast.makeText(MainActivity.this, "第二项被按下", Toast.LENGTH_LONG).show();
+                    delfresh(today.getId());
+                    Toast.makeText(MainActivity.this, "删除", Toast.LENGTH_LONG).show();
                     break;
             }
         }catch(Exception e){}
