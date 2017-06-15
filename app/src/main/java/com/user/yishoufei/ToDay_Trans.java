@@ -12,26 +12,22 @@ import java.util.UUID;
 
 public class ToDay_Trans extends DataSupport {
 
-    private String Id;
+    private long Id;
     private String Car_Num;
     private String Start_Time;
     private String End_Time;
     private String Money;
     public ToDay_Trans(String car_Num, String start_Time, String end_Time, String money) {
-        Id=UUID.randomUUID().toString();
         Car_Num = car_Num;
         Start_Time = start_Time;
         End_Time = end_Time;
         Money = money;
     }
 
-    public String getId() {
+    public long getId() {
         return Id;
     }
 
-    public void setId(String id) {
-        Id = UUID.randomUUID().toString();
-    }
     public String getCar_Num() {
         return Car_Num;
     }

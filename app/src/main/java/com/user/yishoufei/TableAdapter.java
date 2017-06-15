@@ -53,6 +53,7 @@ public class TableAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
 
             convertView = inflater.inflate(R.layout.list_item, null);
+            viewHolder.Id = (TextView) convertView.findViewById(R.id.id);
             viewHolder.TodayCar_Num = (TextView) convertView.findViewById(R.id.text_today_name);
             viewHolder.TodayStart_Time = (TextView) convertView.findViewById(R.id.text_codeBar);
             viewHolder.TodayEnd_Time = (TextView) convertView.findViewById(R.id.text_num);
@@ -63,7 +64,6 @@ public class TableAdapter extends BaseAdapter {
         }else{
             viewHolder = (ViewHolder) convertView.getTag();
         }
-
         viewHolder.TodayCar_Num.setText(today.getCar_Num());
         viewHolder.TodayCar_Num.setTextSize(13);
         viewHolder.TodayStart_Time.setText(today.getStart_Time().toString());
@@ -79,6 +79,7 @@ public class TableAdapter extends BaseAdapter {
     }
 
     public static class ViewHolder{
+        public TextView Id;
         public TextView TodayCar_Num;
         public TextView TodayStart_Time;
         public TextView TodayEnd_Time;

@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
                     Date curDate = new Date(System.currentTimeMillis());
-
                     ToDay_Trans add = new ToDay_Trans(Input_Mess_Start.getText().toString(),
                             formatter.format(curDate), "", "");
                     add.save();
@@ -125,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
         //添加列表点击事件
         tableListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -156,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         try{
             switch(menu.getItemId()){
                 case 0:
-                    Toast.makeText(MainActivity.this, today.getId(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this,today.getId()+"", Toast.LENGTH_LONG).show();
                     break;
                 case 1:
                     Toast.makeText(MainActivity.this, "第二项被按下", Toast.LENGTH_LONG).show();
