@@ -34,17 +34,16 @@ public class TodayAdapter extends ArrayAdapter<ToDay_Trans> {
             view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
             viewHolder = new ViewHolder();
             viewHolder.Id = (TextView) convertView.findViewById(R.id.id);
-            viewHolder.TodayCar_Num = (TextView) convertView.findViewById(R.id.text_today_name);
-            viewHolder.TodayStart_Time = (TextView) convertView.findViewById(R.id.text_codeBar);
-            viewHolder.TodayEnd_Time = (TextView) convertView.findViewById(R.id.text_num);
-            viewHolder.TodayMoney = (TextView) convertView.findViewById(R.id.text_curPrice);
+            viewHolder.TodayCar_Num = (TextView) convertView.findViewById(R.id.car_num);
+            viewHolder.TodayStart_Time = (TextView) convertView.findViewById(R.id.start_time);
+            viewHolder.TodayEnd_Time = (TextView) convertView.findViewById(R.id.still_time);
             view.setTag(viewHolder); // 将ViewHolder存储在View中
         } else {
             view = convertView;
             viewHolder = (ViewHolder) view.getTag(); // 重新获取ViewHolder
         }
         viewHolder.TodayCar_Num.setText(today.getCar_Num());
-        viewHolder.TodayCar_Num.setTextSize(13);
+        viewHolder.TodayCar_Num.setTextSize(18);
         viewHolder.TodayStart_Time.setText(today.getStart_Time().toString());
         viewHolder.TodayStart_Time.setTextSize(13);
         viewHolder.TodayEnd_Time.setText(today.getEnd_Time()+"");

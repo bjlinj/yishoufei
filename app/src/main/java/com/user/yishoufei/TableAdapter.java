@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,7 +19,8 @@ public class TableAdapter extends BaseAdapter {
 
     private List<ToDay_Trans> list;
     private LayoutInflater inflater;
-
+    SimpleDateFormat formatter_date = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat formatter_Time = new SimpleDateFormat("HH:mm:ss");
     public TableAdapter(MainActivity context, List<ToDay_Trans> list){
         this.list = list;
         inflater = LayoutInflater.from(context);
@@ -55,11 +58,9 @@ public class TableAdapter extends BaseAdapter {
 
             convertView = inflater.inflate(R.layout.list_item, null);
             viewHolder.Id = (TextView) convertView.findViewById(R.id.id);
-            viewHolder.TodayCar_Num = (TextView) convertView.findViewById(R.id.text_today_name);
-            viewHolder.TodayStart_Time = (TextView) convertView.findViewById(R.id.text_codeBar);
-            viewHolder.TodayEnd_Time = (TextView) convertView.findViewById(R.id.text_num);
-            viewHolder.TodayMoney = (TextView) convertView.findViewById(R.id.text_curPrice);
-            //viewHolder.goodMoney = (TextView) convertView.findViewById(R.id.text_money);
+            viewHolder.TodayCar_Num = (TextView) convertView.findViewById(R.id.car_num);
+            viewHolder.TodayStart_Time = (TextView) convertView.findViewById(R.id.start_time);
+            viewHolder.Still_Time = (TextView) convertView.findViewById(R.id.still_time);
 
             convertView.setTag(viewHolder);
         }else{
@@ -68,11 +69,14 @@ public class TableAdapter extends BaseAdapter {
         viewHolder.TodayCar_Num.setText(today.getCar_Num());
         viewHolder.TodayCar_Num.setTextSize(20);
         viewHolder.TodayStart_Time.setText(today.getStart_Date()+"\n"+today.getStart_Time().toString());
-        viewHolder.TodayStart_Time.setTextSize(20);
-        viewHolder.TodayEnd_Time.setText(today.getEnd_Time()+"");
-        viewHolder.TodayEnd_Time.setTextSize(20);
-        viewHolder.TodayMoney.setText(today.getMoney()+"");
-        viewHolder.TodayMoney.setTextSize(20);
+        viewHolder.TodayStart_Time.setTextSize(16);
+        Date curDate = new Date(System.currentTimeMillis());
+        String start =today.getStart_Date()+" "+today.getStart_Time();
+        String end = formatter_date.format(curDate)+" "+formatter_Time.format(curDate);
+        IntervalTime intervaltime = new IntervalTime();
+        String interval = intervaltime.get_IntervalTime(start, end);
+        viewHolder.Still_Time.setText(interval);
+        viewHolder.Still_Time.setTextSize(16);
         //viewHolder.goodMoney.setText(goods.getMoney()+"");
         //viewHolder.goodMoney.setTextSize(13);
 
@@ -83,7 +87,7 @@ public class TableAdapter extends BaseAdapter {
         public TextView Id;
         public TextView TodayCar_Num;
         public TextView TodayStart_Time;
-        public TextView TodayEnd_Time;
+        public TextView Still_Time;
         public TextView TodayMoney;
     }
 

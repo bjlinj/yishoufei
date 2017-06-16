@@ -22,11 +22,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.litepal.LitePal;
@@ -40,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static android.R.attr.format;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
     private List<ToDay_Trans> list;
     private ListView tableListView;
     private long get_id;
-    private int search_ctl;
+    private Button Refresh;
+    private Spinner Spinner_City;
+    private ArrayAdapter adapter;
     SimpleDateFormat formatter_date = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formatter_Time = new SimpleDateFormat("HH:mm:ss");
 
@@ -124,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-
         homeview = findViewById(R.id.include_home);
         web_ui = findViewById(R.id.include_view);
         webView = (WebView) findViewById(R.id.web_view);
@@ -132,14 +137,42 @@ public class MainActivity extends AppCompatActivity {
         End_Money = (Button) findViewById(R.id.Button_End);
         Input_Mess_Start = (EditText) findViewById(R.id.Input_Mess_Start);
         Input_Mess_End = (EditText) findViewById(R.id.Input_Mess_End);
-        //ivDeleteText =(ImageView) findViewById(R.id.ivDeleteText);
+        Refresh = (Button) findViewById(R.id.refresh);
+        Spinner_City = (Spinner) findViewById(R.id.spinner_city);
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
-        //tableTitle.setBackgroundColor(Color.rgb(177, 173, 172));
-        tableTitle.setBackgroundColor(Color.rgb(69, 40, 235));
+        tableTitle.setBackgroundColor(Color.parseColor("#B4B3B3"));
         fresh();
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        //选择下拉框
+
+        adapter =ArrayAdapter.createFromResource(this, R.array.city, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner_City.setAdapter(adapter);
+        Spinner_City.setVisibility(View.VISIBLE);
+    class SpinnerXMLSelectedListener implements OnItemSelectedListener{
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+                                       long arg3) {
+                Input_Mess_Start.setText(adapter.getItem(arg2)+"");
+                Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
+            }
+
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+            }
+
+        }
+        Spinner_City.setOnItemSelectedListener(new SpinnerXMLSelectedListener());//选择监听
+        //刷新点击事件
+        Refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fresh();
+                Input_Mess_Start.setText("");
+                Input_Mess_End.setText("");
+            }
+        });
         //添加开始收费点击事件
         Start_Money.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Date curDate = new Date(System.currentTimeMillis());
                     ToDay_Trans add = new ToDay_Trans(Input_Mess_Start.getText().toString(),
-                            formatter_date.format(curDate),formatter_Time.format(curDate), "","", "", "0");//0表示还未收费的
+                            formatter_date.format(curDate), formatter_Time.format(curDate), "", "", "", "0");//0表示还未收费的
                     add.save();
                     //Log.d("aaaaa",add.getCar_Num());
                     fresh();
@@ -183,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                  * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
                  * 所以这里我们就需要加上数据的修改的动作了。*/
 
-                    selfresh(Input_Mess_End.getText().toString());//按照车牌号动态查询
+                selfresh(Input_Mess_End.getText().toString());//按照车牌号动态查询
             }
         });
 
@@ -200,8 +233,8 @@ public class MainActivity extends AppCompatActivity {
                     //弹出通知框
                     AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
                     dialog.setTitle("本次收费小票");
-                    String start =list.get(0).getStart_Date()+" "+list.get(0).getStart_Time();
-                    String end = formatter_date.format(curDate)+" "+formatter_Time.format(curDate);
+                    String start = list.get(0).getStart_Date() + " " + list.get(0).getStart_Time();
+                    String end = formatter_date.format(curDate) + " " + formatter_Time.format(curDate);
                     IntervalTime intervaltime = new IntervalTime();
                     String interval = intervaltime.get_IntervalTime(start, end);
                     list.get(0).getCar_Num();
@@ -253,7 +286,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v,
                                             ContextMenu.ContextMenuInfo menuInfo) {
-                menu.add(0, 0, 0, "结束计费");
                 menu.add(0, 1, 0, "删除");
             }
 

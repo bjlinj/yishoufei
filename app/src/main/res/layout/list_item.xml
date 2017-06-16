@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/id"
@@ -12,85 +12,65 @@
         android:gravity="center"
         android:paddingBottom="10dip"
         android:paddingTop="10dip"
+        android:text="id"
         android:textColor="#000000"
         android:textSize="15sp"
-        android:visibility="gone"
-        android:text="id" />
-    
+        android:visibility="gone" />
+
     <View
         android:layout_width="1.5dip"
         android:layout_height="fill_parent"
         android:background="#B4B3B3"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <TextView
-        android:id="@+id/text_today_name"
+        android:id="@+id/car_num"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="1.5"
-        android:paddingBottom="10dip"
-        android:paddingTop="10dip"
-        android:textColor="#000000"
-        android:textSize="15sp"
+        android:gravity="center"
         android:maxLines="2"
-        android:gravity="center"
-        android:text="车牌号" />
-    
-     <View 
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:text="车牌号"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <View
         android:layout_width="1.5dip"
         android:layout_height="fill_parent"
-        android:background="#B4B3B3"/>
+        android:background="#B4B3B3" />
 
-     <TextView
-        android:id="@+id/text_codeBar"
+    <TextView
+        android:id="@+id/start_time"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:paddingBottom="10dip"
-        android:textColor="#000000"
-        android:paddingTop="10dip"
-        android:textSize="15sp"
         android:gravity="center"
-        android:text="开始时间" />
-     
-     <View 
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:text="开始时间"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <View
         android:layout_width="1.5dip"
         android:layout_height="fill_parent"
-        android:background="#B4B3B3"/>
+        android:background="#B4B3B3" />
 
-     <TextView
-        android:id="@+id/text_num"
+    <TextView
+        android:id="@+id/still_time"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
+        android:layout_weight="3"
+        android:gravity="center"
         android:paddingBottom="10dip"
         android:paddingTop="10dip"
+        android:text="持续时间"
         android:textColor="#000000"
-        android:textSize="15sp"
-        android:gravity="center"
-        android:text="结束时间" />
-     
-     <View 
-        android:layout_width="1.5dip"
-        android:layout_height="fill_parent"
-        android:background="#B4B3B3"/>
-
-     <TextView
-        android:id="@+id/text_curPrice"
-        android:layout_width="0dip"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:paddingBottom="10dip"
-        android:textColor="#000000"
-        android:textSize="15sp"
-        android:singleLine="true"
-        android:paddingTop="10dip"
-        android:gravity="center"
-        android:text="现价" />
-     
-     <View 
-        android:layout_width="1.5dip"
-        android:layout_height="fill_parent"
-        android:background="#B4B3B3"/>
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
 </LinearLayout>

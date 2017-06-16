@@ -7,6 +7,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp">
+    <Spinner android:id="@+id/spinner_city"
+        android:layout_width="0dp"
+        android:layout_weight="0.3"
+        android:layout_height="wrap_content">
+    </Spinner>
     <EditText
         android:id="@+id/Input_Mess_Start"
         android:layout_width="0dp"
@@ -39,6 +44,19 @@
         android:layout_height="wrap_content"
         android:text="结束计费" />
 </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:gravity="right"
+        android:layout_marginTop="2dp">
+        <Button
+            android:id="@+id/refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="刷新" />
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
