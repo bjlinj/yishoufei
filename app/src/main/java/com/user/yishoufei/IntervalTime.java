@@ -15,7 +15,7 @@ public class IntervalTime {
     }
 
     public String get_IntervalTime(String Start, String End) {
-        DateFormat df = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Date d1 = df.parse(Start);
             Date d2 = df.parse(End);

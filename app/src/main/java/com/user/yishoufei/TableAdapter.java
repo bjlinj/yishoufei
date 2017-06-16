@@ -1,5 +1,6 @@
 package com.user.yishoufei;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,13 +66,13 @@ public class TableAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.TodayCar_Num.setText(today.getCar_Num());
-        viewHolder.TodayCar_Num.setTextSize(13);
-        viewHolder.TodayStart_Time.setText(today.getStart_Time().toString());
-        viewHolder.TodayStart_Time.setTextSize(13);
+        viewHolder.TodayCar_Num.setTextSize(20);
+        viewHolder.TodayStart_Time.setText(today.getStart_Date()+"\n"+today.getStart_Time().toString());
+        viewHolder.TodayStart_Time.setTextSize(20);
         viewHolder.TodayEnd_Time.setText(today.getEnd_Time()+"");
-        viewHolder.TodayEnd_Time.setTextSize(13);
+        viewHolder.TodayEnd_Time.setTextSize(20);
         viewHolder.TodayMoney.setText(today.getMoney()+"");
-        viewHolder.TodayMoney.setTextSize(13);
+        viewHolder.TodayMoney.setTextSize(20);
         //viewHolder.goodMoney.setText(goods.getMoney()+"");
         //viewHolder.goodMoney.setTextSize(13);
 
