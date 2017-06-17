@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -31,6 +32,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.litepal.LitePal;
@@ -43,7 +45,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 
 
 public class MainActivity extends AppCompatActivity {
@@ -64,30 +65,31 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter adapter_Alphabet_city;
     private String city_shot_alphabet;//字幕简写
     private String city_shot;//中文简写
+    private TextView Car_Num;
+    private TextView Start_Time;
     SimpleDateFormat formatter_date = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formatter_Time = new SimpleDateFormat("HH:mm:ss");
 
     //刷新列表
     public void fresh() {
-        list = DataSupport.where("Type_Cord = ?", "0").order("Start_Date desc,Start_Time desc").find(ToDay_Trans.class);
+        list = DataSupport.where("Type_Cord = ?", "0").order("Start_Date desc").find(ToDay_Trans.class);
         tableListView = (ListView) findViewById(R.id.list);
         //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
         TableAdapter adapter = new TableAdapter(MainActivity.this, list);
         tableListView.setAdapter(adapter);
         Input_Mess_Start.setText("");
         Input_Mess_End.setText("");
-        Input_Mess_Start.setText(city_shot+city_shot_alphabet);//刷新后添加简写
+        Input_Mess_Start.setText(city_shot + city_shot_alphabet);//刷新后添加简写
         Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
     }
-
     //按条件模糊查询
     public void selfresh(String s) {
-            list = DataSupport.order("Start_Date desc").order("Start_Time desc").where("Car_Num like ? ", "%" + s + "%").find(ToDay_Trans.class);
-            tableListView = (ListView) findViewById(R.id.list);
-            //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
-            TableAdapter adapter = new TableAdapter(MainActivity.this, list);
-            tableListView.setAdapter(adapter);
-
+        list.clear();
+        list = DataSupport.order("Start_Date desc").order("Start_Time desc").where("Car_Num like ? and Type_Cord = ?", "%" + s + "%" ,"0").find(ToDay_Trans.class);
+        tableListView = (ListView) findViewById(R.id.list);
+        //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
+        TableAdapter adapter = new TableAdapter(MainActivity.this, list);
+        tableListView.setAdapter(adapter);
     }
 
     //用ID精确查找
@@ -146,28 +148,29 @@ public class MainActivity extends AppCompatActivity {
         Input_Mess_Start = (EditText) findViewById(R.id.Input_Mess_Start);
         Input_Mess_End = (EditText) findViewById(R.id.Input_Mess_End);
         Spinner_City = (Spinner) findViewById(R.id.spinner_city);
-        Spinner_Alphabet_city= (Spinner) findViewById(R.id.alphabet_city);
+        Spinner_Alphabet_city = (Spinner) findViewById(R.id.alphabet_city);
+        Car_Num=(TextView)findViewById(R.id.car_num);
+        Start_Time=(TextView)findViewById(R.id.start_time);
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
         tableTitle.setBackgroundColor(Color.parseColor("#B4B3B3"));
-        fresh();
+        fresh();//初始化加载刷新数据库
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         //选择下拉框
-
-        adapter_City =ArrayAdapter.createFromResource(this, R.array.city, android.R.layout.simple_spinner_item);
+        adapter_City = ArrayAdapter.createFromResource(this, R.array.city, android.R.layout.simple_spinner_item);
         adapter_City.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner_City.setAdapter(adapter_City);
         Spinner_City.setVisibility(View.VISIBLE);
-        adapter_Alphabet_city =ArrayAdapter.createFromResource(this, R.array.alphabet_city, android.R.layout.simple_spinner_item);
+        adapter_Alphabet_city = ArrayAdapter.createFromResource(this, R.array.alphabet_city, android.R.layout.simple_spinner_item);
         adapter_Alphabet_city.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner_Alphabet_city.setAdapter(adapter_Alphabet_city);
         Spinner_Alphabet_city.setVisibility(View.VISIBLE);
-    class SpinnerXMLSelectedListener implements OnItemSelectedListener{
+        class SpinnerXMLSelectedListener implements OnItemSelectedListener {
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
                                        long arg3) {
-                Input_Mess_Start.setText(adapter_City.getItem(arg2)+""+city_shot_alphabet);//先设置简写加上老的字母简写
-                city_shot=adapter_City.getItem(arg2)+"";//把简写付给变量
+                Input_Mess_Start.setText(adapter_City.getItem(arg2) + "" + city_shot_alphabet);//先设置简写加上老的字母简写
+                city_shot = adapter_City.getItem(arg2) + "";//把简写付给变量
                 Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());//光标移到最后
             }
 
@@ -176,13 +179,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-        class SpinnerAlphabetXMLSelectedListener implements OnItemSelectedListener{
+        class SpinnerAlphabetXMLSelectedListener implements OnItemSelectedListener {
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
                                        long arg3) {
                 Input_Mess_Start.setText("");
                 Input_Mess_Start.setText(city_shot);//先添加城市简写
-                Input_Mess_Start.append(adapter_Alphabet_city.getItem(arg2)+"");//再添加字母简写
-                city_shot_alphabet=adapter_Alphabet_city.getItem(arg2)+"";//添加字母简写到变量
+                Input_Mess_Start.append(adapter_Alphabet_city.getItem(arg2) + "");//再添加字母简写
+                city_shot_alphabet = adapter_Alphabet_city.getItem(arg2) + "";//添加字母简写到变量
                 Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
             }
 
@@ -201,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String input_mess_start = Input_Mess_Start.getText().toString();
                 //Log.d("input_mess_start", Input_Mess_Start.getText().toString());
-                if (input_mess_start.length() == 0) {
+                if (input_mess_start.equals(city_shot + city_shot_alphabet)||input_mess_start.length()==0) {
                     Toast.makeText(MainActivity.this, "请输入车牌号", Toast.LENGTH_SHORT).show();
                 } else {
                     Date curDate = new Date(System.currentTimeMillis());
@@ -211,52 +214,39 @@ public class MainActivity extends AppCompatActivity {
                     //Log.d("aaaaa",add.getCar_Num());
                     fresh();
                     Input_Mess_Start.setText("");
-                    Input_Mess_Start.setText(city_shot+city_shot_alphabet);//点击开始收费后添加简写
+                    Input_Mess_Start.setText(city_shot + city_shot_alphabet);//点击开始收费后添加简写
                     Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
                 }
             }
         });
         //实现收费输入框动态搜索
         Input_Mess_End.addTextChangedListener(new TextWatcher() {
-
             @Override
             public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
                 // TODO Auto-generated method stub
                 //这个应该是在改变的时候会做的动作吧，具体还没用到过。
             }
-
             @Override
             public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
                                           int arg3) {
                 // TODO Auto-generated method stub
                 //这是文本框改变之前会执行的动作
             }
-
             @Override
             public void afterTextChanged(Editable s) {
                 // TODO Auto-generated method stub
 /*                *这是文本框改变之后 会执行的动作
                  * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
                  * 所以这里我们就需要加上数据的修改的动作了。*/
-
                 selfresh(Input_Mess_End.getText().toString());//按照车牌号动态查询
             }
         });
 
-        //结束计费
+        //刷新列表
         Button_Fresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fresh();
-                    //写入数据库
-/*                    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
-                    Date curDate = new Date(System.currentTimeMillis());
-                    ToDay_Trans update = new ToDay_Trans();
-
-                    ToDay_Trans add = new ToDay_Trans(Input_Mess_End.getText().toString(),
-                            formatter.format(curDate), "", "");
-                    add.save();*/
-                    //Log.d("aaaaa",add.getCar_Num());
             }
         });
         //添加列表点击事件
@@ -282,13 +272,20 @@ public class MainActivity extends AppCompatActivity {
                 dialog.setPositiveButton("确定收费", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        //UPDATE 数据库
+                        ToDay_Trans today_trans = new ToDay_Trans();
+                        Date curDate = new Date(System.currentTimeMillis());
+                        today_trans.setEnd_Date(formatter_date.format(curDate));
+                        today_trans.setEnd_Time(formatter_Time.format(curDate));
+                        today_trans.setType_Cord("1");//1表示已结账
+                        today_trans.update(get_id);
+                        fresh();
                     }
                 });
                 dialog.setNeutralButton("取消退出", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        fresh();
                     }
                 });
                 dialog.show();

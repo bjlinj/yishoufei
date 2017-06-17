@@ -20,7 +20,13 @@ public class ToDay_Trans extends DataSupport {
     private String End_Time;
     private String End_Date;
     private String Money;
-    public ToDay_Trans(String car_Num,String start_date,String start_Time, String end_date,String end_Time, String money,String type_Cord) {
+
+    public ToDay_Trans() {
+        super();
+    }
+
+
+    public ToDay_Trans(String car_Num, String start_date, String start_Time, String end_date, String end_Time, String money, String type_Cord) {
         Car_Num=car_Num;
         Start_Time = start_Time;
         End_Time = end_Time;
