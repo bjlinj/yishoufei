@@ -8,8 +8,11 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp">
     <Spinner android:id="@+id/spinner_city"
-        android:layout_width="0dp"
-        android:layout_weight="0.3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </Spinner>
+    <Spinner android:id="@+id/alphabet_city"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
     </Spinner>
     <EditText
@@ -18,7 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:maxLines="1"
-        android:hint="输入车牌号开始计费"/>
+        android:inputType="textVisiblePassword"
+        android:hint="选择输入车牌号"/>
     <Button
         android:id="@+id/Button_Start"
         android:layout_width="wrap_content"

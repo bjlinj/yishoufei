@@ -27,7 +27,7 @@
         android:id="@+id/car_num"
         android:layout_width="0dip"
         android:layout_height="wrap_content"
-        android:layout_weight="1.5"
+        android:layout_weight="1.8"
         android:gravity="center"
         android:maxLines="2"
         android:paddingBottom="10dip"

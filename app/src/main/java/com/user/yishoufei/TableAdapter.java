@@ -67,7 +67,7 @@ public class TableAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.TodayCar_Num.setText(today.getCar_Num());
-        viewHolder.TodayCar_Num.setTextSize(20);
+        viewHolder.TodayCar_Num.setTextSize(16);
         viewHolder.TodayStart_Time.setText(today.getStart_Date()+"\n"+today.getStart_Time().toString());
         viewHolder.TodayStart_Time.setTextSize(16);
         Date curDate = new Date(System.currentTimeMillis());

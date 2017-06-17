@@ -60,13 +60,17 @@ public class MainActivity extends AppCompatActivity {
     private long get_id;
     private Button Refresh;
     private Spinner Spinner_City;
-    private ArrayAdapter adapter;
+    private ArrayAdapter adapter_City;
+    private Spinner Spinner_Alphabet_city;
+    private ArrayAdapter adapter_Alphabet_city;
+    private String city_shot_alphabet;//字幕简写
+    private String city_shot;//中文简写
     SimpleDateFormat formatter_date = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formatter_Time = new SimpleDateFormat("HH:mm:ss");
 
     //刷新列表
     public void fresh() {
-        list = DataSupport.where("Type_Cord = ?", "0").order("Start_Time desc").find(ToDay_Trans.class);
+        list = DataSupport.where("Type_Cord = ?", "0").order("Start_Date desc,Start_Time desc").find(ToDay_Trans.class);
         tableListView = (ListView) findViewById(R.id.list);
         //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
         TableAdapter adapter = new TableAdapter(MainActivity.this, list);
@@ -75,11 +79,12 @@ public class MainActivity extends AppCompatActivity {
 
     //按条件模糊查询
     public void selfresh(String s) {
-        list = DataSupport.order("Start_Date desc").order("Start_Time desc").where("Car_Num like ? ", "%" + s + "%").find(ToDay_Trans.class);
-        tableListView = (ListView) findViewById(R.id.list);
-        //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
-        TableAdapter adapter = new TableAdapter(MainActivity.this, list);
-        tableListView.setAdapter(adapter);
+            list = DataSupport.order("Start_Date desc").order("Start_Time desc").where("Car_Num like ? ", "%" + s + "%").find(ToDay_Trans.class);
+            tableListView = (ListView) findViewById(R.id.list);
+            //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
+            TableAdapter adapter = new TableAdapter(MainActivity.this, list);
+            tableListView.setAdapter(adapter);
+
     }
 
     //用ID精确查找
@@ -126,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         LitePal.getDatabase();
-        ActionBar actionBar = getSupportActionBar();//隐藏默认的控件
+        final ActionBar actionBar = getSupportActionBar();//隐藏默认的控件
         if (actionBar != null) {
             actionBar.hide();
         }
@@ -139,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         Input_Mess_End = (EditText) findViewById(R.id.Input_Mess_End);
         Refresh = (Button) findViewById(R.id.refresh);
         Spinner_City = (Spinner) findViewById(R.id.spinner_city);
+        Spinner_Alphabet_city= (Spinner) findViewById(R.id.alphabet_city);
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
         tableTitle.setBackgroundColor(Color.parseColor("#B4B3B3"));
         fresh();
@@ -147,15 +153,21 @@ public class MainActivity extends AppCompatActivity {
 
         //选择下拉框
 
-        adapter =ArrayAdapter.createFromResource(this, R.array.city, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        Spinner_City.setAdapter(adapter);
+        adapter_City =ArrayAdapter.createFromResource(this, R.array.city, android.R.layout.simple_spinner_item);
+        adapter_City.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner_City.setAdapter(adapter_City);
         Spinner_City.setVisibility(View.VISIBLE);
+
+        adapter_Alphabet_city =ArrayAdapter.createFromResource(this, R.array.alphabet_city, android.R.layout.simple_spinner_item);
+        adapter_Alphabet_city.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner_Alphabet_city.setAdapter(adapter_Alphabet_city);
+        Spinner_Alphabet_city.setVisibility(View.VISIBLE);
     class SpinnerXMLSelectedListener implements OnItemSelectedListener{
             public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
                                        long arg3) {
-                Input_Mess_Start.setText(adapter.getItem(arg2)+"");
-                Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
+                Input_Mess_Start.setText(adapter_City.getItem(arg2)+""+city_shot_alphabet);//先设置简写加上老的字母简写
+                city_shot=adapter_City.getItem(arg2)+"";//把简写付给变量
+                Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());//光标移到最后
             }
 
             public void onNothingSelected(AdapterView<?> arg0) {
@@ -163,7 +175,24 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-        Spinner_City.setOnItemSelectedListener(new SpinnerXMLSelectedListener());//选择监听
+        class SpinnerAlphabetXMLSelectedListener implements OnItemSelectedListener{
+            public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+                                       long arg3) {
+                Input_Mess_Start.setText("");
+                Input_Mess_Start.setText(city_shot);//先添加城市简写
+                Input_Mess_Start.append(adapter_Alphabet_city.getItem(arg2)+"");//再添加字母简写
+                city_shot_alphabet=adapter_Alphabet_city.getItem(arg2)+"";//添加字母简写到变量
+                Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
+            }
+
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+
+            }
+
+        }
+        Spinner_Alphabet_city.setOnItemSelectedListener(new SpinnerAlphabetXMLSelectedListener());//字母监听
+        Spinner_City.setOnItemSelectedListener(new SpinnerXMLSelectedListener());//简写选择监听
         //刷新点击事件
         Refresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,6 +200,8 @@ public class MainActivity extends AppCompatActivity {
                 fresh();
                 Input_Mess_Start.setText("");
                 Input_Mess_End.setText("");
+                Input_Mess_Start.setText(city_shot+city_shot_alphabet);//刷新后添加简写
+                Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
             }
         });
         //添加开始收费点击事件
@@ -183,13 +214,14 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "请输入车牌号", Toast.LENGTH_SHORT).show();
                 } else {
                     Date curDate = new Date(System.currentTimeMillis());
-                    ToDay_Trans add = new ToDay_Trans(Input_Mess_Start.getText().toString(),
+                    ToDay_Trans add = new ToDay_Trans(Input_Mess_Start.getText().toString().toUpperCase(),
                             formatter_date.format(curDate), formatter_Time.format(curDate), "", "", "", "0");//0表示还未收费的
                     add.save();
                     //Log.d("aaaaa",add.getCar_Num());
                     fresh();
-
                     Input_Mess_Start.setText("");
+                    Input_Mess_Start.setText(city_shot+city_shot_alphabet);//点击开始收费后添加简写
+                    Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
                 }
             }
         });
@@ -227,8 +259,8 @@ public class MainActivity extends AppCompatActivity {
                 String input_mess_end = Input_Mess_End.getText().toString();
                 list = sreachbyid(get_id);
                 Date curDate = new Date(System.currentTimeMillis());
-                if (input_mess_end.length() == 0) {
-                    Toast.makeText(MainActivity.this, "请输入或者选择车牌号", Toast.LENGTH_SHORT).show();
+                if (input_mess_end.length() == 0||list==null||list.size() ==0) {
+                    Toast.makeText(MainActivity.this, "请选择车牌号", Toast.LENGTH_SHORT).show();
                 } else {
                     //弹出通知框
                     AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
