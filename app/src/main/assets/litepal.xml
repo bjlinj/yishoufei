@@ -4,5 +4,6 @@
     <version value="1"></version>
     <list>
         <mapping class="com.user.yishoufei.ToDay_Trans" ></mapping>
+        <mapping class="com.user.yishoufei.RuleConfig" ></mapping>
     </list>
 </litepal>

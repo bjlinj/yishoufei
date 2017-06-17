@@ -41,6 +41,7 @@ import org.litepal.tablemanager.Connector;
 import org.litepal.util.Const;
 
 import java.sql.Time;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -212,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
                             formatter_date.format(curDate), formatter_Time.format(curDate), "", "", "", "0");//0表示还未收费的
                     add.save();
                     //Log.d("aaaaa",add.getCar_Num());
+                    list.clear();
                     fresh();
                     Input_Mess_Start.setText("");
                     Input_Mess_Start.setText(city_shot + city_shot_alphabet);//点击开始收费后添加简写
@@ -246,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
         Button_Fresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                list.clear();
                 fresh();
             }
         });
@@ -265,9 +268,14 @@ public class MainActivity extends AppCompatActivity {
                 String end = formatter_date.format(curDate) + " " + formatter_Time.format(curDate);
                 IntervalTime intervaltime = new IntervalTime();
                 String interval = intervaltime.get_IntervalTime(start, end);
+                long  still_minutes =intervaltime.get_still_minutes(start, end);
+                double  unitprice=new RuleConfig().getUnitPrice();
+                DecimalFormat df = new DecimalFormat("#0.00");
+                double pay = (unitprice/60)*still_minutes;//计算消费金额
                 list.get(0).getCar_Num();
                 dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
-                        + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval);
+                        + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
+                        "\n\n应收费用："+df.format(pay)+"元");
                 dialog.setCancelable(false);
                 dialog.setPositiveButton("确定收费", new DialogInterface.OnClickListener() {
                     @Override
@@ -279,17 +287,18 @@ public class MainActivity extends AppCompatActivity {
                         today_trans.setEnd_Time(formatter_Time.format(curDate));
                         today_trans.setType_Cord("1");//1表示已结账
                         today_trans.update(get_id);
+                        list.clear();
                         fresh();
                     }
                 });
                 dialog.setNeutralButton("取消退出", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        list.clear();
                         fresh();
                     }
                 });
                 dialog.show();
-                fresh();
                 Input_Mess_End.setText("");
 
                 //Toast.makeText(MainActivity.this, today.getCar_Num(), Toast.LENGTH_SHORT).show();
