@@ -41,27 +41,14 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:maxLines="1"
-        android:hint="选择车牌号结束计费"/>
+        android:inputType="textVisiblePassword"
+        android:hint="选择或搜索车牌号结束计费"/>
     <Button
-        android:id="@+id/Button_End"
+        android:id="@+id/Button_fresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="结束计费" />
+        android:text="刷新列表" />
 </LinearLayout>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:gravity="right"
-        android:layout_marginTop="2dp">
-        <Button
-            android:id="@+id/refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="刷新" />
-    </LinearLayout>
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"

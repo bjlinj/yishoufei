@@ -52,13 +52,12 @@ public class MainActivity extends AppCompatActivity {
     private View web_ui;
     private WebView webView;
     private Button Start_Money;
-    private Button End_Money;
     private EditText Input_Mess_Start;
     private EditText Input_Mess_End;
     private List<ToDay_Trans> list;
     private ListView tableListView;
     private long get_id;
-    private Button Refresh;
+    private Button Button_Fresh;
     private Spinner Spinner_City;
     private ArrayAdapter adapter_City;
     private Spinner Spinner_Alphabet_city;
@@ -75,6 +74,10 @@ public class MainActivity extends AppCompatActivity {
         //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
         TableAdapter adapter = new TableAdapter(MainActivity.this, list);
         tableListView.setAdapter(adapter);
+        Input_Mess_Start.setText("");
+        Input_Mess_End.setText("");
+        Input_Mess_Start.setText(city_shot+city_shot_alphabet);//刷新后添加简写
+        Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
     }
 
     //按条件模糊查询
@@ -139,10 +142,9 @@ public class MainActivity extends AppCompatActivity {
         web_ui = findViewById(R.id.include_view);
         webView = (WebView) findViewById(R.id.web_view);
         Start_Money = (Button) findViewById(R.id.Button_Start);
-        End_Money = (Button) findViewById(R.id.Button_End);
+        Button_Fresh = (Button) findViewById(R.id.Button_fresh);
         Input_Mess_Start = (EditText) findViewById(R.id.Input_Mess_Start);
         Input_Mess_End = (EditText) findViewById(R.id.Input_Mess_End);
-        Refresh = (Button) findViewById(R.id.refresh);
         Spinner_City = (Spinner) findViewById(R.id.spinner_city);
         Spinner_Alphabet_city= (Spinner) findViewById(R.id.alphabet_city);
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
@@ -157,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
         adapter_City.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner_City.setAdapter(adapter_City);
         Spinner_City.setVisibility(View.VISIBLE);
-
         adapter_Alphabet_city =ArrayAdapter.createFromResource(this, R.array.alphabet_city, android.R.layout.simple_spinner_item);
         adapter_Alphabet_city.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         Spinner_Alphabet_city.setAdapter(adapter_Alphabet_city);
@@ -193,17 +194,7 @@ public class MainActivity extends AppCompatActivity {
         }
         Spinner_Alphabet_city.setOnItemSelectedListener(new SpinnerAlphabetXMLSelectedListener());//字母监听
         Spinner_City.setOnItemSelectedListener(new SpinnerXMLSelectedListener());//简写选择监听
-        //刷新点击事件
-        Refresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fresh();
-                Input_Mess_Start.setText("");
-                Input_Mess_End.setText("");
-                Input_Mess_Start.setText(city_shot+city_shot_alphabet);//刷新后添加简写
-                Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
-            }
-        });
+
         //添加开始收费点击事件
         Start_Money.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -253,41 +244,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //结束计费
-        End_Money.setOnClickListener(new View.OnClickListener() {
+        Button_Fresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String input_mess_end = Input_Mess_End.getText().toString();
-                list = sreachbyid(get_id);
-                Date curDate = new Date(System.currentTimeMillis());
-                if (input_mess_end.length() == 0||list==null||list.size() ==0) {
-                    Toast.makeText(MainActivity.this, "请选择车牌号", Toast.LENGTH_SHORT).show();
-                } else {
-                    //弹出通知框
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-                    dialog.setTitle("本次收费小票");
-                    String start = list.get(0).getStart_Date() + " " + list.get(0).getStart_Time();
-                    String end = formatter_date.format(curDate) + " " + formatter_Time.format(curDate);
-                    IntervalTime intervaltime = new IntervalTime();
-                    String interval = intervaltime.get_IntervalTime(start, end);
-                    list.get(0).getCar_Num();
-                    dialog.setMessage("\n\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
-                            + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval);
-                    dialog.setCancelable(false);
-                    dialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-                    dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-                    dialog.show();
-                    fresh();
-                    Input_Mess_End.setText("");
+                fresh();
                     //写入数据库
 /*                    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
                     Date curDate = new Date(System.currentTimeMillis());
@@ -297,8 +257,6 @@ public class MainActivity extends AppCompatActivity {
                             formatter.format(curDate), "", "");
                     add.save();*/
                     //Log.d("aaaaa",add.getCar_Num());
-
-                }
             }
         });
         //添加列表点击事件
@@ -309,6 +267,34 @@ public class MainActivity extends AppCompatActivity {
                 ToDay_Trans today = list.get(position);
                 Input_Mess_End.setText(today.getCar_Num());
                 get_id = today.getId();
+                list = sreachbyid(get_id);
+                Date curDate = new Date(System.currentTimeMillis());
+                AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+                dialog.setTitle("本次收费小票");
+                String start = list.get(0).getStart_Date() + " " + list.get(0).getStart_Time();
+                String end = formatter_date.format(curDate) + " " + formatter_Time.format(curDate);
+                IntervalTime intervaltime = new IntervalTime();
+                String interval = intervaltime.get_IntervalTime(start, end);
+                list.get(0).getCar_Num();
+                dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
+                        + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval);
+                dialog.setCancelable(false);
+                dialog.setPositiveButton("确定收费", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                dialog.setNeutralButton("取消退出", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                dialog.show();
+                fresh();
+                Input_Mess_End.setText("");
+
                 //Toast.makeText(MainActivity.this, today.getCar_Num(), Toast.LENGTH_SHORT).show();
             }
         });
