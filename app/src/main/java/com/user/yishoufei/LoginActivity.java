@@ -293,6 +293,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
 
     }
 */
+/*
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
@@ -312,6 +313,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
         int ADDRESS = 0;
         int IS_PRIMARY = 1;
     }
+*/
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
