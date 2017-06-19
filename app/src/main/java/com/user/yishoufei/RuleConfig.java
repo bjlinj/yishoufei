@@ -8,16 +8,16 @@ import org.litepal.crud.DataSupport;
 
 public class RuleConfig extends DataSupport {
 
-    private int UnitPrice=2;//暂时设置一小时2元
+    private double  UnitPrice=2;//暂时设置一小时2元
 
     public RuleConfig() {
     }
 
-    public int getUnitPrice() {
+    public double  getUnitPrice() {
         return UnitPrice;
     }
 
-    public void setUnitPrice(int unitPrice) {
+    public void setUnitPrice(double unitPrice) {
         UnitPrice = unitPrice;
     }
 

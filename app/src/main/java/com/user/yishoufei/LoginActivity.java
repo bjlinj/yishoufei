@@ -3,12 +3,14 @@ package com.user.yishoufei;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -25,6 +27,7 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -34,6 +37,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -41,6 +45,7 @@ import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +64,10 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
 
     private ImageView bingPicImg;
     private List<Random_Num> list_random_num;
+    private  List<RuleConfig> list_ruleconfig;
     SimpleDateFormat    formatter    =   new SimpleDateFormat("yyyyMMdd");
     Date    curDate    =   new    Date(System.currentTimeMillis());//获取当前时间
+    private String invite_num;
 
 
 
@@ -92,6 +99,11 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private TextView random_num_view;
+    private TextView invite;
+    private RuleConfig ruleconfig;
+    private EditText edit;
+
 //http://blog.csdn.net/jasonkent27/article/details/40590891 代码解析
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,17 +129,24 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
         });
 
         Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
-        TextView random_num_view =(TextView) findViewById(R.id.random_num);
-
+        random_num_view =(TextView) findViewById(R.id.random_num);
+        invite =(TextView) findViewById(R.id.invite_num);
 
         //判断 随机加密表是否有数据
         list_random_num=DataSupport.findAll(Random_Num.class);
+        Random_Num random_num = new Random_Num();
         if(null == list_random_num || list_random_num.size() ==0 ){
-            Random_Num random_num = new Random_Num();
             String rn = random_num.getRandom_Num();
             random_num.setStrRand(rn);
+            random_num.save();
             random_num_view.setText(random_num.getStrRand());
+        }else {
+            for(Random_Num rn :list_random_num){
+                random_num_view.setText(rn.getStrRand());
+                random_num.setStrRand(rn.getStrRand());
+            }
         }
+
 
         //sendRequestWithOkHttp();//加载解析图片json
         //获取图片
@@ -137,8 +156,6 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
         } else {
             loadBingPic();//加载图片
         }
-
-
         mSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,6 +165,27 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+    }
+
+
+
+
+    // 判断邀请码是否正确 判断标准为3为验证码(第一位+第三位)*第二位
+    private boolean IsInvite() {
+        if(invite.getText().toString()==null||invite.getText() .toString().equals("")){
+            return false;
+        }else {
+        //拿到截取邀请码
+        int Int1 = Integer.parseInt(random_num_view.getText().toString().substring(0,1));
+        int Int2 = Integer.parseInt(random_num_view.getText().toString().substring(1,2));
+        int Int3 = Integer.parseInt(random_num_view.getText().toString().substring(2,3));
+        int result = (Int1+Int3)*Int2;
+        int invite_num=Integer.parseInt(invite.getText().toString());
+        if(result==invite_num){
+            return true;
+        }else {
+            return false;
+        }}
     }
 
     private void populateAutoComplete() {
@@ -179,6 +217,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
         }
         return false;
     }
+
 
     /**
      * Callback received when a permissions request has been completed.
@@ -369,7 +408,10 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                 if (pieces[0].equals(mEmail)) {
                     // Account exists, return true if the password matches.
                     return pieces[1].equals(mPassword);
-                }else {
+                }else if(IsInvite()){
+                    return true;
+                }
+                else {
                     return false;
                 }
             }
@@ -384,8 +426,42 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
             showProgress(false);
 
             if (success) {
-                Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                startActivity(intent);
+                //判断是否设置收费单价
+                ruleconfig = new RuleConfig();
+                list_ruleconfig = DataSupport.findAll(RuleConfig.class);
+                if (null == list_ruleconfig || list_ruleconfig.size() ==0 ){
+                    LayoutInflater factory = LayoutInflater.from(LoginActivity.this);//提示框
+                    final View view = factory.inflate(R.layout.dialog_edittext, null);//这里必须是final的
+                    edit=(EditText)view.findViewById(R.id.dialog_edittext);//获得输入框对象
+                    new AlertDialog.Builder(LoginActivity.this)
+                            .setTitle("请输入收费标准")//提示框标题
+                            .setView(view)
+                            .setPositiveButton("确定",//提示框的两个按钮
+                                    new android.content.DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog,
+                                                            int which) {
+                                            if(edit.getText().toString()==null||edit.getText() .toString().equals("")){
+                                                Toast.makeText(LoginActivity.this, "请输入收费标准", Toast.LENGTH_SHORT).show();
+                                            }else{
+                                                //更新数据库
+                                                DecimalFormat df = new DecimalFormat("#0.00");//保留2位小数
+                                                ruleconfig.setUnitPrice(Double.parseDouble(df.format(edit.getText().toString())));
+                                                ruleconfig.save();
+
+                                            }
+
+                                            //事件
+                                        }
+                                    }).setNegativeButton("取消", null).create().show();
+
+                }else {
+                    for(RuleConfig rc :list_ruleconfig){
+                        rc.setUnitPrice(rc.getUnitPrice());
+                    }
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                }
                 //finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

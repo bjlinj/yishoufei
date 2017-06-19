@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="25dp"
+        android:text="收费单价为每小时"
+        android:textSize="15sp" />
+
+    <EditText
+        android:id="@+id/dialog_edittext"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:digits="0123456789."
+        android:maxLength="4"
+        android:maxLines="1"
+        android:textSize="15sp"></EditText>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="元"
+        android:textSize="15sp" />
+</LinearLayout>
