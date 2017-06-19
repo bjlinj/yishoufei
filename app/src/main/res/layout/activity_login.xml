@@ -4,8 +4,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
-
-
         <ImageView
             android:id="@+id/bing_pic_img"
             android:layout_width="match_parent"
@@ -22,6 +20,22 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="50dp"
     tools:context="com.user.yishoufei.LoginActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/random_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="验证码："
+            android:textSize="15sp"/>
+        <TextView
+            android:id="@+id/random_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"/>
+    </LinearLayout>
 
 
     <!-- Login progress -->

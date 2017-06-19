@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -36,7 +37,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.IOException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import okhttp3.Call;
@@ -53,7 +58,18 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AppCompatActivity/* implements LoaderCallbacks<Cursor>*/ {
 
     private ImageView bingPicImg;
+    private List<Random_Num> list_random_num;
+    SimpleDateFormat    formatter    =   new SimpleDateFormat("yyyyMMdd");
+    Date    curDate    =   new    Date(System.currentTimeMillis());//获取当前时间
 
+
+
+
+
+    //获取手机唯一识别码
+    //TelephonyManager TelephonyMgr = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+    //String szImei = TelephonyMgr.getDeviceId();
+    //String SubszImei = szImei.substring(0,szImei.length()-3);//截取后两位
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -82,7 +98,6 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         bingPicImg = (ImageView) findViewById(R.id.bing_pic_img);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);//设置缓存
         // Set up the login form.
@@ -102,12 +117,21 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
         });
 
         Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
+        TextView random_num_view =(TextView) findViewById(R.id.random_num);
 
 
+        //判断 随机加密表是否有数据
+        list_random_num=DataSupport.findAll(Random_Num.class);
+        if(null == list_random_num || list_random_num.size() ==0 ){
+            Random_Num random_num = new Random_Num();
+            String rn = random_num.getRandom_Num();
+            random_num.setStrRand(rn);
+            random_num_view.setText(random_num.getStrRand());
+        }
 
         //sendRequestWithOkHttp();//加载解析图片json
         //获取图片
-        String bingPic = prefs.getString("bing_pic", null);
+        String bingPic = prefs.getString("bing_pic_"+formatter.format(curDate), null);
         if (bingPic != null) {
             Glide.with(this).load(bingPic).into(bingPicImg);//如果有缓存就从缓存拿
         } else {
@@ -412,7 +436,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
             public void onResponse(Call call, Response response) throws IOException {
                 final String bingPic = response.body().string();
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit();
-                editor.putString("bing_pic", bingPic);
+                editor.putString("bing_pic_"+formatter.format(curDate), bingPic);
                 editor.apply();
                 runOnUiThread(new Runnable() {
                     @Override

@@ -1,10 +1,12 @@
 package com.user.yishoufei;
 
+import org.litepal.crud.DataSupport;
+
 /**
  * Created by User on 2017/6/17.
  */
 
-public class RuleConfig {
+public class RuleConfig extends DataSupport {
 
     private int UnitPrice=2;//暂时设置一小时2元
 
