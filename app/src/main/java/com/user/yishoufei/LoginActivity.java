@@ -49,13 +49,14 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
 import okhttp3.Call;
 import okhttp3.Response;
 import okhttp3.Callback;
 
 
-
 import static android.Manifest.permission.READ_CONTACTS;
+import static java.lang.Float.parseFloat;
 
 /**
  * A login screen that offers login via username/password.
@@ -64,13 +65,10 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
 
     private ImageView bingPicImg;
     private List<Random_Num> list_random_num;
-    private  List<RuleConfig> list_ruleconfig;
-    SimpleDateFormat    formatter    =   new SimpleDateFormat("yyyyMMdd");
-    Date    curDate    =   new    Date(System.currentTimeMillis());//获取当前时间
+    private List<RuleConfig> list_ruleconfig;
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+    Date curDate = new Date(System.currentTimeMillis());//获取当前时间
     private String invite_num;
-
-
-
 
 
     //获取手机唯一识别码
@@ -104,7 +102,8 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     private RuleConfig ruleconfig;
     private EditText edit;
 
-//http://blog.csdn.net/jasonkent27/article/details/40590891 代码解析
+
+    //http://blog.csdn.net/jasonkent27/article/details/40590891 代码解析
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,19 +128,19 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
         });
 
         Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
-        random_num_view =(TextView) findViewById(R.id.random_num);
-        invite =(TextView) findViewById(R.id.invite_num);
+        random_num_view = (TextView) findViewById(R.id.random_num);
+        invite = (TextView) findViewById(R.id.invite_num);
 
         //判断 随机加密表是否有数据
-        list_random_num=DataSupport.findAll(Random_Num.class);
+        list_random_num = DataSupport.findAll(Random_Num.class);
         Random_Num random_num = new Random_Num();
-        if(null == list_random_num || list_random_num.size() ==0 ){
+        if (null == list_random_num || list_random_num.size() == 0) {
             String rn = random_num.getRandom_Num();
             random_num.setStrRand(rn);
             random_num.save();
             random_num_view.setText(random_num.getStrRand());
-        }else {
-            for(Random_Num rn :list_random_num){
+        } else {
+            for (Random_Num rn : list_random_num) {
                 random_num_view.setText(rn.getStrRand());
                 random_num.setStrRand(rn.getStrRand());
             }
@@ -150,7 +149,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
 
         //sendRequestWithOkHttp();//加载解析图片json
         //获取图片
-        String bingPic = prefs.getString("bing_pic_"+formatter.format(curDate), null);
+        String bingPic = prefs.getString("bing_pic_" + formatter.format(curDate), null);
         if (bingPic != null) {
             Glide.with(this).load(bingPic).into(bingPicImg);//如果有缓存就从缓存拿
         } else {
@@ -168,24 +167,23 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     }
 
 
-
-
     // 判断邀请码是否正确 判断标准为3为验证码(第一位+第三位)*第二位
     private boolean IsInvite() {
-        if(invite.getText().toString()==null||invite.getText() .toString().equals("")){
+        if (invite.getText().toString() == null || invite.getText().toString().equals("")) {
             return false;
-        }else {
-        //拿到截取邀请码
-        int Int1 = Integer.parseInt(random_num_view.getText().toString().substring(0,1));
-        int Int2 = Integer.parseInt(random_num_view.getText().toString().substring(1,2));
-        int Int3 = Integer.parseInt(random_num_view.getText().toString().substring(2,3));
-        int result = (Int1+Int3)*Int2;
-        int invite_num=Integer.parseInt(invite.getText().toString());
-        if(result==invite_num){
-            return true;
-        }else {
-            return false;
-        }}
+        } else {
+            //拿到截取邀请码
+            int Int1 = Integer.parseInt(random_num_view.getText().toString().substring(0, 1));
+            int Int2 = Integer.parseInt(random_num_view.getText().toString().substring(1, 2));
+            int Int3 = Integer.parseInt(random_num_view.getText().toString().substring(2, 3));
+            int result = (Int1 + Int3) * Int2;
+            int invite_num = Integer.parseInt(invite.getText().toString());
+            if (result == invite_num) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     private void populateAutoComplete() {
@@ -193,7 +191,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
             return;
         }
 
-    //    getLoaderManager().initLoader(0, null, this);
+        //    getLoaderManager().initLoader(0, null, this);
     }
 
     private boolean mayRequestContacts() {
@@ -408,10 +406,9 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                 if (pieces[0].equals(mEmail)) {
                     // Account exists, return true if the password matches.
                     return pieces[1].equals(mPassword);
-                }else if(IsInvite()){
+                } else if (IsInvite()) {
                     return true;
-                }
-                else {
+                } else {
                     return false;
                 }
             }
@@ -429,10 +426,11 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                 //判断是否设置收费单价
                 ruleconfig = new RuleConfig();
                 list_ruleconfig = DataSupport.findAll(RuleConfig.class);
-                if (null == list_ruleconfig || list_ruleconfig.size() ==0 ){
+                if (null == list_ruleconfig || list_ruleconfig.size() == 0) {
                     LayoutInflater factory = LayoutInflater.from(LoginActivity.this);//提示框
                     final View view = factory.inflate(R.layout.dialog_edittext, null);//这里必须是final的
-                    edit=(EditText)view.findViewById(R.id.dialog_edittext);//获得输入框对象
+                    edit = (EditText) view.findViewById(R.id.dialog_edittext);//获得输入框对象
+
                     new AlertDialog.Builder(LoginActivity.this)
                             .setTitle("请输入收费标准")//提示框标题
                             .setView(view)
@@ -441,26 +439,29 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                                         @Override
                                         public void onClick(DialogInterface dialog,
                                                             int which) {
-                                            if(edit.getText().toString()==null||edit.getText() .toString().equals("")){
+                                            if (edit.getText().toString() == null || edit.getText().toString().equals("")) {
                                                 Toast.makeText(LoginActivity.this, "请输入收费标准", Toast.LENGTH_SHORT).show();
-                                            }else{
+                                            } else {
                                                 //更新数据库
                                                 DecimalFormat df = new DecimalFormat("#0.00");//保留2位小数
-                                                ruleconfig.setUnitPrice(Double.parseDouble(df.format(edit.getText().toString())));
+                                                Double dou = Double.parseDouble(edit.getText().toString());
+                                                Log.d("===", dou + "");
+                                                ruleconfig.setUnitPrice(dou);
                                                 ruleconfig.save();
-
+                                                Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                startActivity(Main_intent);//保存成功跳到主页
                                             }
 
                                             //事件
                                         }
                                     }).setNegativeButton("取消", null).create().show();
 
-                }else {
-                    for(RuleConfig rc :list_ruleconfig){
+                } else {
+                    for (RuleConfig rc : list_ruleconfig) {
                         rc.setUnitPrice(rc.getUnitPrice());
                     }
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(Main_intent);//跳到主页
                 }
                 //finish();
             } else {
@@ -512,7 +513,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
             public void onResponse(Call call, Response response) throws IOException {
                 final String bingPic = response.body().string();
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit();
-                editor.putString("bing_pic_"+formatter.format(curDate), bingPic);
+                editor.putString("bing_pic_" + formatter.format(curDate), bingPic);
                 editor.apply();
                 runOnUiThread(new Runnable() {
                     @Override

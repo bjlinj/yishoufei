@@ -11,6 +11,7 @@ public class RuleConfig extends DataSupport {
     private double  UnitPrice=2;//暂时设置一小时2元
 
     public RuleConfig() {
+        super();
     }
 
     public double  getUnitPrice() {
