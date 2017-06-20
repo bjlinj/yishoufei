@@ -68,7 +68,6 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     private List<RuleConfig> list_ruleconfig;
     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
     Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-    private String invite_num;
 
 
     //获取手机唯一识别码
@@ -101,6 +100,8 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     private TextView invite;
     private RuleConfig ruleconfig;
     private EditText edit;
+    private List<UserName> list_username;
+    private String invite_num;
 
 
     //http://blog.csdn.net/jasonkent27/article/details/40590891 代码解析
@@ -164,11 +165,20 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+
     }
+
+    //获取用户名密码
+    private String getPass(String user){
+        list_username = DataSupport.where("username = ?",user).find(UserName.class);
+        return list_username.get(0).getPassword();
+}
 
 
     // 判断邀请码是否正确 判断标准为3为验证码(第一位+第三位)*第二位
     private boolean IsInvite() {
+        invite_num=invite.getText().toString();
         if (invite.getText().toString() == null || invite.getText().toString().equals("")) {
             return false;
         } else {
@@ -382,11 +392,11 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String mUsername;
         private final String mPassword;
 
         UserLoginTask(String username, String password) {
-            mEmail = username;
+            mUsername = username;
             mPassword = password;
         }
 
@@ -401,20 +411,30 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
+                if (getPass(mUsername).equals(mPassword)) {
                     // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                } else if (IsInvite()) {
                     return true;
-                } else {
+                    //加密码算法匹配则插入用户名密码
+                } else if (IsInvite()&&getPass(mUsername).length()==0) {
+                    //邀请码正确，用户不存在存入数据库
+                    UserName username = new UserName();
+                    username.setUsername(mUsername);
+                    username.setPassword(mPassword);
+                    username.save();
+                    return true;
+                } else if (invite_num.equals("888")&&getPass(mUsername).length()!=0){
+                    //邀请码如果为888允许修改密码，用户存在，密码错误，则需改密码
+                    UserName username = new UserName();
+                    username.setUsername(mUsername);
+                    username.setPassword(mPassword);
+                    username.update(list_username.get(0).getId());
+                    return true;
+                }
+
+                else {
                     return false;
                 }
-            }
 
-            // TODO: register the new account here.
-            return true;
         }
 
         @Override
