@@ -164,6 +164,8 @@ public class MainActivity extends AppCompatActivity {
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
         config=findViewById(R.id.config);
         Config_Price =(EditText) findViewById(R.id.price_edit);
+        Set_Button = (Button) findViewById(R.id.set_price);
+
         tableTitle.setBackgroundColor(Color.parseColor("#B4B3B3"));
         fresh();//初始化加载刷新数据库
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -325,11 +327,24 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
         //设置收费单价
         //数据库获取收费单价
         Intent intent = getIntent();
         Config_Price.setText(intent.getStringExtra("confi_data"));
+
+        Set_Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RuleConfig ruleconfig =  new RuleConfig();
+                ruleconfig.setUnitPrice(Double.parseDouble(Config_Price.getText().toString()));
+                ruleconfig.updateAll();//跟新新的收费单价
+                Intent Main_intent = new Intent(MainActivity.this, MainActivity.class);
+                Main_intent.putExtra("confi_data",ruleconfig.getUnitPrice()+"");
+                startActivity(Main_intent);//跳到主页
+                Toast.makeText(MainActivity.this, "修改成功返回主页", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     @Override
