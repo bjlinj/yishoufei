@@ -18,7 +18,9 @@
         android:digits="0123456789."
         android:maxLength="4"
         android:maxLines="1"
-        android:textSize="15sp"></EditText>
+        android:textSize="15sp">
+
+    </EditText>
 
     <TextView
         android:layout_width="wrap_content"

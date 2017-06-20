@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private String city_shot;//中文简写
     private TextView Car_Num;
     private TextView Start_Time;
+    private View config;
     SimpleDateFormat formatter_date = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formatter_Time = new SimpleDateFormat("HH:mm:ss");
 
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     //home_button.setText(R.string.title_home);
-                    homeview.setVisibility(View.VISIBLE);
+                    config.setVisibility(View.VISIBLE);
                     web_ui.setVisibility(View.GONE);
                     return true;
                 case R.id.navigation_dashboard:
@@ -126,8 +127,8 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_notifications:
                     // mTextMessage.setText(R.string.title_notifications);
-                    Intent Config_intent = new Intent( MainActivity.this ,ConfigActivity.class);
-                    startActivity(Config_intent);//保存成功跳到主页
+                    config.setVisibility(View.GONE);
+                    web_ui.setVisibility(View.GONE);
                     return true;
             }
             return false;
@@ -156,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         Car_Num=(TextView)findViewById(R.id.car_num);
         Start_Time=(TextView)findViewById(R.id.start_time);
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
+        config =findViewById(R.id.content);
         tableTitle.setBackgroundColor(Color.parseColor("#B4B3B3"));
         fresh();//初始化加载刷新数据库
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
