@@ -170,9 +170,9 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     }
 
     //获取用户名密码
-    private String getPass(String user){
+    private List<UserName> getPass(String user){
         list_username = DataSupport.where("username = ?",user).find(UserName.class);
-        return list_username.get(0).getPassword();
+            return list_username;
 }
 
 
@@ -411,18 +411,18 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                 return false;
             }
 
-                if (getPass(mUsername).equals(mPassword)) {
+                if (getPass(mUsername).size()!=0&&getPass(mUsername).get(0).getPassword().equals(mPassword)) {
                     // Account exists, return true if the password matches.
                     return true;
                     //加密码算法匹配则插入用户名密码
-                } else if (IsInvite()&&getPass(mUsername).length()==0) {
+                } else if (IsInvite()&&getPass(mUsername).size()==0) {
                     //邀请码正确，用户不存在存入数据库
                     UserName username = new UserName();
                     username.setUsername(mUsername);
                     username.setPassword(mPassword);
                     username.save();
                     return true;
-                } else if (invite_num.equals("888")&&getPass(mUsername).length()!=0){
+                } else if (invite_num.equals("888")&&getPass(mUsername).size()!=0){
                     //邀请码如果为888允许修改密码，用户存在，密码错误，则需改密码
                     UserName username = new UserName();
                     username.setUsername(mUsername);
