@@ -1,6 +1,7 @@
 package com.user.yishoufei;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.icu.text.LocaleDisplayNames;
 import android.os.Bundle;
@@ -125,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_notifications:
                     // mTextMessage.setText(R.string.title_notifications);
+                    Intent Config_intent = new Intent( MainActivity.this ,ConfigActivity.class);
+                    startActivity(Config_intent);//保存成功跳到主页
                     return true;
             }
             return false;

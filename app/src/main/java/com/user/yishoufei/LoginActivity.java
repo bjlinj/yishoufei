@@ -445,7 +445,6 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                                                 //更新数据库
                                                 DecimalFormat df = new DecimalFormat("#0.00");//保留2位小数
                                                 Double dou = Double.parseDouble(edit.getText().toString());
-                                                Log.d("===", dou + "");
                                                 ruleconfig.setUnitPrice(dou);
                                                 ruleconfig.save();
                                                 Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
