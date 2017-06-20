@@ -448,6 +448,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                                                 ruleconfig.setUnitPrice(dou);
                                                 ruleconfig.save();
                                                 Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                Main_intent.putExtra("confi_data",ruleconfig.getUnitPrice()+"");
                                                 startActivity(Main_intent);//保存成功跳到主页
                                             }
 
@@ -457,9 +458,11 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
 
                 } else {
                     for (RuleConfig rc : list_ruleconfig) {
-                        rc.setUnitPrice(rc.getUnitPrice());
+                        ruleconfig.setUnitPrice(rc.getUnitPrice());
                     }
+
                     Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
+                    Main_intent.putExtra("confi_data",ruleconfig.getUnitPrice()+"");
                     startActivity(Main_intent);//跳到主页
                 }
                 //finish();
