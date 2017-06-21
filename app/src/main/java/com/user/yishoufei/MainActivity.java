@@ -282,7 +282,8 @@ public class MainActivity extends AppCompatActivity {
                 IntervalTime intervaltime = new IntervalTime();
                 String interval = intervaltime.get_IntervalTime(start, end);
                 long  still_minutes =intervaltime.get_still_minutes(start, end);
-                double  unitprice=new RuleConfig().getUnitPrice();
+                //double  unitprice=new RuleConfig().getUnitPrice();
+                double unitprice= Double.parseDouble(Config_Price.getText().toString());
                 DecimalFormat df = new DecimalFormat("#0.00");
                 double pay = (unitprice/60)*still_minutes;//计算消费金额
                 list.get(0).getCar_Num();
