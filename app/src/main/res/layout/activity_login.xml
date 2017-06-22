@@ -19,7 +19,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="50dp"
-    tools:context="com.user.yishoufei.LoginActivity">
+    tools:context="com.user.yishoufei.com.user.myyishoufei.LoginActivity">
 
     <!-- Login progress -->
     <ProgressBar

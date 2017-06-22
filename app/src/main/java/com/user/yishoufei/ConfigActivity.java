@@ -6,8 +6,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.webkit.WebViewClient;
 
 public class ConfigActivity extends AppCompatActivity {
 
@@ -31,13 +29,13 @@ public class ConfigActivity extends AppCompatActivity {
                     Intent Main_intent = new Intent( ConfigActivity.this ,MainActivity.class);
                     startActivity(Main_intent);//跳到主页面
                     return true;
-                case R.id.navigation_dashboard:
+                /*case R.id.navigation_dashboard:*/
 /*                    homeview.setVisibility(View.GONE);
                     web_ui.setVisibility(View.VISIBLE);
                     webView.getSettings().setJavaScriptEnabled(true);
                     webView.setWebViewClient(new WebViewClient());
                     webView.loadUrl("http://news.sina.com.cn/");*/
-                    return true;
+                   /* return true;*/
                 case R.id.navigation_notifications:
                     // mTextMessage.setText(R.string.title_notifications);
                     return true;

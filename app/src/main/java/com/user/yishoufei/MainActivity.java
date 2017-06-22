@@ -3,10 +3,7 @@ package com.user.yishoufei;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.icu.text.LocaleDisplayNames;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.ActionBar;
@@ -14,23 +11,18 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -38,13 +30,9 @@ import android.widget.Toast;
 
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
-import org.litepal.tablemanager.Connector;
-import org.litepal.util.Const;
 
-import java.sql.Time;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -121,14 +109,14 @@ public class MainActivity extends AppCompatActivity {
                     web_ui.setVisibility(View.GONE);
                     config.setVisibility(View.GONE);
                     return true;
-                case R.id.navigation_dashboard:
+/*                case R.id.navigation_dashboard:
                     homeview.setVisibility(View.GONE);
                     web_ui.setVisibility(View.VISIBLE);
                     config.setVisibility(View.GONE);
                     webView.getSettings().setJavaScriptEnabled(true);
                     webView.setWebViewClient(new WebViewClient());
                     webView.loadUrl("http://news.sina.com.cn/");
-                    return true;
+                    return true;*/
                 case R.id.navigation_notifications:
                     // mTextMessage.setText(R.string.title_notifications);
                     homeview.setVisibility(View.GONE);

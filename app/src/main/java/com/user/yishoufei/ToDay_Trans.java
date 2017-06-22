@@ -2,10 +2,6 @@ package com.user.yishoufei;
 
 import org.litepal.crud.DataSupport;
 
-import java.sql.Time;
-import java.util.Date;
-import java.util.UUID;
-
 /**
  * Created by User on 2017/6/13.
  */

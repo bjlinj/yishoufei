@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.user.yishoufei.MainActivity">
+    tools:context="com.user.yishoufei.com.user.myyishoufei.MainActivity">
 
     <FrameLayout
         android:id="@+id/content"
