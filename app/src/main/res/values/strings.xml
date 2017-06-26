@@ -14,4 +14,8 @@
     <string name="error_field_required">请输入账号或手机号</string>
     <string name="permission_rationale">"账号或者密码不存在请重新输入"
     </string>
+
+    <string name="click_to_skip">点击跳过</string>
+    <string name="gdtslogan">GDTslogan</string>
+    <string name="title_activity_splash">SplashActivity</string>
 </resources>
