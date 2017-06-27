@@ -34,7 +34,7 @@ public class SplashActivity extends Activity implements SplashADListener {
     private SplashAD splashAD;
     private ViewGroup container;
     private TextView skipView;
-    private ImageView splashHolder;
+    //private ImageView splashHolder;
     private static final String SKIP_TEXT = "点击跳过 %d";
 
     public boolean canJump = false;
@@ -45,7 +45,7 @@ public class SplashActivity extends Activity implements SplashADListener {
         setContentView(R.layout.activity_splash);
         container = (ViewGroup) this.findViewById(R.id.splash_container);
         skipView = (TextView) findViewById(R.id.skip_view);
-        splashHolder = (ImageView) findViewById(R.id.splash_holder);
+        //splashHolder = (ImageView) findViewById(R.id.splash_holder);
 
         // 如果targetSDKVersion >= 23，就要申请好权限。如果您的App没有适配到Android6.0（即targetSDKVersion < 23），那么只需要在这里直接调用fetchSplashAD接口。
         if (Build.VERSION.SDK_INT >= 23) {
@@ -136,7 +136,7 @@ public class SplashActivity extends Activity implements SplashADListener {
     @Override
     public void onADPresent() {
         Log.i("AD_DEMO", "SplashADPresent");
-        splashHolder.setVisibility(View.INVISIBLE); // 广告展示后一定要把预设的开屏图片隐藏起来
+        //splashHolder.setVisibility(View.INVISIBLE); // 广告展示后一定要把预设的开屏图片隐藏起来
     }
 
     @Override
@@ -166,8 +166,8 @@ public class SplashActivity extends Activity implements SplashADListener {
     public void onNoAD(int errorCode) {
         Log.i("AD_DEMO", "LoadSplashADFail, eCode=" + errorCode);
         /** 如果加载广告失败，则直接跳转 */
-        //this.startActivity(new Intent(this, DemoListActivity.class));
-        //this.finish();
+        this.startActivity(new Intent(this, LoginActivity.class));
+        this.finish();
     }
 
     /**

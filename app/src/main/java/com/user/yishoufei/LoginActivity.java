@@ -139,12 +139,12 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
 
         //sendRequestWithOkHttp();//加载解析图片json
         //获取图片
-        String bingPic = prefs.getString("bing_pic_" + formatter.format(curDate), null);
+/*        String bingPic = prefs.getString("bing_pic_" + formatter.format(curDate), null);
         if (bingPic != null) {
             Glide.with(this).load(bingPic).into(bingPicImg);//如果有缓存就从缓存拿
         } else {
             loadBingPic();//加载图片
-        }
+        }*/
         mSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -519,7 +519,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
         Bing_Pic bing_pic = gson.fromJson(jsonData,Bing_Pic.class);
     }*/
 //获取每日图片
-    private void loadBingPic() {
+ /*   private void loadBingPic() {
         String requestBingPic = "http://guolin.tech/api/bing_pic";
         HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
             @Override
@@ -541,6 +541,6 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                 e.printStackTrace();
             }
         });
-    }
+    }*/
 }
 
