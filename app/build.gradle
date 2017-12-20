@@ -34,5 +34,5 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile files('libs/GDTUnionSDK.4.9.545.min.jar')
+    compile files('/Users/issuser/Documents/StudioProjects/yishoufei/libs/commons-net-3.6.jar')
 }

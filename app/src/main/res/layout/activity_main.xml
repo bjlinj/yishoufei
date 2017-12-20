@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.user.yishoufei.com.user.myyishoufei.MainActivity">
+    tools:context="com.user.yishoufei.MainActivity">
 
     <FrameLayout
         android:id="@+id/content"
@@ -20,10 +20,15 @@
        layout="@layout/home"
        android:visibility="visible">
    </include>
-   <include
+<!--   <include
        android:id="@+id/include_view"
        layout="@layout/web_ui"
        android:visibility="gone">
+   </include>-->
+   <include
+            android:id="@+id/include_select"
+            layout="@layout/select"
+            android:visibility="gone">
    </include>
    <include
        android:id="@+id/config"
@@ -32,14 +37,11 @@
     </include>
     </FrameLayout>
 
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
         <include layout="@layout/botton_nav"></include>
     </LinearLayout>
 

@@ -1,5 +1,6 @@
 package com.user.yishoufei;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,8 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by User on 2017/6/11.
@@ -21,7 +25,12 @@ public class TableAdapter extends BaseAdapter {
     SimpleDateFormat formatter_date = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formatter_Time = new SimpleDateFormat("HH:mm:ss");
     public TableAdapter(MainActivity context, List<ToDay_Trans> list){
-        this.list = list;
+        this.list = new ArrayList(list);
+//        Collections.sort(list,new SortComparator());
+//        for(ToDay_Trans attribute : list) {
+//            System.out.println(attribute.getId()+"=="+new SortComparator());
+//        }
+
         inflater = LayoutInflater.from(context);
     }
 
@@ -48,7 +57,7 @@ public class TableAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         ToDay_Trans today = (ToDay_Trans) this.getItem(position);
-
+        Collections.sort(list,new SortComparator());//排序处理
         ViewHolder viewHolder;
 
         if(convertView == null){
@@ -76,6 +85,7 @@ public class TableAdapter extends BaseAdapter {
         String interval = intervaltime.get_IntervalTime(start, end);
         viewHolder.Still_Time.setText(interval);
         viewHolder.Still_Time.setTextSize(16);
+
         //viewHolder.goodMoney.setText(goods.getMoney()+"");
         //viewHolder.goodMoney.setTextSize(13);
 
@@ -89,5 +99,7 @@ public class TableAdapter extends BaseAdapter {
         public TextView Still_Time;
         public TextView TodayMoney;
     }
+
+
 
 }

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">易收费</string>
     <string name="title_home">主页</string>
-    <string name="title_dashboard">新闻</string>
+    <string name="title_dashboard">查询</string>
     <string name="title_notifications">设置</string>
     <!-- Strings related to login -->
     <string name="prompt_email">输入账号或手机号</string>

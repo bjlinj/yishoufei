@@ -1,5 +1,7 @@
 package com.user.yishoufei;
 
+import android.util.Log;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,6 +45,13 @@ public class IntervalTime {
         } catch (Exception e) {
         }
         return still_minutes;
+
+    }
+    public String getCurrentdate(){
+        DateFormat df = new SimpleDateFormat("yyyyMMdd");
+        String current =df.format(new Date());
+        Log.d("current",current+"======");
+        return  current+"";
 
     }
 }

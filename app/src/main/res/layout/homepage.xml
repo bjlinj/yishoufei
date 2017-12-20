@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="com.user.yishoufei.MainActivity">
+
+        <FrameLayout
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            >
+            <include
+                android:id="@+id/include_home"
+                layout="@layout/home"
+                android:visibility="visible">
+            </include>
+            <!--   <include
+                   android:id="@+id/include_view"
+                   layout="@layout/web_ui"
+                   android:visibility="gone">
+               </include>-->
+            <include
+                android:id="@+id/include_select"
+                layout="@layout/select"
+                android:visibility="gone">
+            </include>
+            <include
+                android:id="@+id/config"
+                layout="@layout/activity_config"
+                android:visibility="gone">
+            </include>
+        </FrameLayout>
+
+</LinearLayout>
