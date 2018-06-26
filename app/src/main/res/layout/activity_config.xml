@@ -11,33 +11,60 @@
         android:paddingBottom="20dp"
         android:paddingLeft="16dp"
         android:layout_marginTop="20dp"
- />
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingLeft="16dp">
-    <TextView
-        android:id="@+id/price_tex"
+        />
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="单价每小时"
-        android:textSize="16sp"
-/>
+        android:paddingLeft="16dp">
+        <TextView
+            android:id="@+id/price_tex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="单价每小时"
+            android:textSize="16sp"
+            />
 
-    <EditText
-        android:id="@+id/price_edit"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:digits="0123456789."
-        android:maxLength="6"
+        <EditText
+            android:id="@+id/price_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:digits="0123456789."
+            android:maxLength="6"
 
- />
-    <TextView
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="元"
+            />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="元"
- />
-</LinearLayout>
+        android:paddingLeft="16dp">
+        <TextView
+            android:id="@+id/free_price_tex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="免费分钟数："
+            android:textSize="16sp"
+            />
+
+        <EditText
+            android:id="@+id/free_price_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:digits="0123456789."
+            android:maxLength="6"
+
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="分钟"
+            />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -45,12 +72,12 @@
         android:layout_gravity="right"
         android:paddingRight="16dp"
         android:paddingTop="50dp">
-    <Button
-        android:id="@+id/set_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="确定修改"
- />
+        <Button
+            android:id="@+id/set_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="确定修改"
+            />
     </LinearLayout>
 
 </LinearLayout>

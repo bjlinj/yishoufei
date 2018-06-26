@@ -16,14 +16,12 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,13 +29,11 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
-import android.widget.TabHost;
 import android.widget.Toast;
 
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,7 +41,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -73,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView Start_Time;
     private View config;
     private EditText Config_Price;
+    private EditText Config_Free_Price;
     private Button   Set_Button;
     private String pay;
     private TabHost tabHost;
@@ -92,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     public void fresh() {
         list = DataSupport.where("Type_Cord = ?", "0").find(ToDay_Trans.class);
         tableListView = (ListView) findViewById(R.id.list);
+
         //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
         //Collections.sort(list,new SortComparator());
 //        for(ToDay_Trans attribute : list) {
@@ -154,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_dashboard:
                     homeview.setVisibility(View.GONE);
                     //web_ui.setVisibility(View.VISIBLE);
-                   // select.setVisibility(View.VISIBLE);
+                    // select.setVisibility(View.VISIBLE);
                     config.setVisibility(View.GONE);
                     return true;
                 //设置页
@@ -178,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
         final ActionBar actionBar = getSupportActionBar();//隐藏默认的控件
         if (actionBar != null) {
             actionBar.hide();
-    }
+        }
 
 
         homeview = findViewById(R.id.include_home);//加载主页
@@ -196,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
         config=findViewById(R.id.config);
         Config_Price =(EditText) findViewById(R.id.price_edit);
+        Config_Free_Price=(EditText)findViewById(R.id.free_price_edit);
         Set_Button = (Button) findViewById(R.id.set_price);
 
         TabHost tab = (FragmentTabHost) findViewById(android.R.id.tabhost);  //获取tabHost对象
@@ -276,6 +274,8 @@ public class MainActivity extends AppCompatActivity {
                     Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
                     save();//生成本地文件
                     ftpUpload();//上传服务器
+                    // Save_mysql Sl= new Save_mysql();
+                    // Sl.insert(add);
                 }
             }
         });
@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 // TODO Auto-generated method stub
-/*                *这是文本框改变之后 会执行的动作
+                /*                *这是文本框改变之后 会执行的动作
                  * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
                  * 所以这里我们就需要加上数据的修改的动作了。*/
                 selfresh(Input_Mess_End.getText().toString());//按照车牌号动态查询
@@ -329,13 +329,32 @@ public class MainActivity extends AppCompatActivity {
                 long  still_minutes =intervaltime.get_still_minutes(start, end);
                 //double  unitprice=new RuleConfig().getUnitPrice();
                 double unitprice= Double.parseDouble(Config_Price.getText().toString());
+                Log.d("Config_Free_Price====",Config_Free_Price.getText().toString());
+                if (Config_Free_Price ==null) {
+                    Config_Free_Price.setText("0.00");
+                }
+                double freeprice=Double.parseDouble(Config_Free_Price.getText().toString());
                 DecimalFormat df = new DecimalFormat("#0.00");
-                pay = df.format((unitprice/60)*still_minutes);//计算消费金额
-                list.get(0).getCar_Num();
-                dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
-                        + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
-                        "\n\n应收费用："+pay+"元");
-                dialog.setCancelable(false);
+                if(freeprice>=still_minutes){
+                    Log.d("freeprice====",freeprice+"");
+                    Log.d("still_minutes====",still_minutes+"");
+                    pay = df.format(0.00);//计算消费金额
+                    //pay = df.format((unitprice/60)*still_minutes);//计算消费金额
+                    list.get(0).getCar_Num();
+                    dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
+                            + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
+                            "小于设定的时间"+freeprice+"\n\n应收费用："+pay+"元");
+                    dialog.setCancelable(false);
+                }else{
+                    pay = df.format((unitprice/60)*still_minutes);//计算消费金额
+                    list.get(0).getCar_Num();
+                    dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
+                            + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
+                            "\n\n应收费用："+pay+"元");
+                    dialog.setCancelable(false);
+                }
+
+
                 dialog.setPositiveButton("确定收费", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -383,23 +402,34 @@ public class MainActivity extends AppCompatActivity {
         //数据库获取收费单价
         Intent intent = getIntent();
         Config_Price.setText(intent.getStringExtra("confi_data"));
+        Config_Free_Price.setText(intent.getStringExtra("confi_free_price"));
 
         Set_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RuleConfig ruleconfig =  new RuleConfig();
                 String config_str  = Config_Price.getText().toString();
+                String config_free_Price =Config_Free_Price.getText().toString();
                 //Log.d("config_str",config_str+"======");
                 if(config_str==null || config_str.equals("")){
-                   Toast.makeText(MainActivity.this, "请输入数值", Toast.LENGTH_SHORT).show();
-               }else {
+                    Toast.makeText(MainActivity.this, "请输入数值", Toast.LENGTH_SHORT).show();
+                }else {
                     ruleconfig.setUnitPrice(Double.parseDouble(Config_Price.getText().toString()));
-                    ruleconfig.updateAll();//跟新新的收费单价
-                    Intent Main_intent = new Intent(MainActivity.this, MainActivity.class);
-                    Main_intent.putExtra("confi_data", ruleconfig.getUnitPrice() + "");
-                    startActivity(Main_intent);//跳到主页
-                    Toast.makeText(MainActivity.this, "修改成功返回主页", Toast.LENGTH_SHORT).show();
                 }
+                if(config_free_Price==null||config_free_Price.equals("")){
+                    Toast.makeText(MainActivity.this,"",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    ruleconfig.setFreePrice(Double.parseDouble(config_free_Price));
+                }
+                ruleconfig.updateAll();//跟新新的收费单价
+                Intent Main_intent = new Intent(MainActivity.this, MainActivity.class);
+                //把设置好的参数带到主页
+                Main_intent.putExtra("confi_data", ruleconfig.getUnitPrice() + "");
+                Main_intent.putExtra("confi_free_price", ruleconfig.getFreePrice() + "");
+                startActivity(Main_intent);//跳到主页
+                Toast.makeText(MainActivity.this, "修改成功返回主页", Toast.LENGTH_SHORT).show();
+
             }
         });
 

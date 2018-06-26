@@ -10,6 +10,17 @@ public class RuleConfig extends DataSupport {
 
     private double  UnitPrice;//暂时设置一小时2元
 
+    private double FreePrice =0;//设置免费分钟数
+
+    public double getFreePrice() {
+        return FreePrice;
+    }
+
+    public void setFreePrice(double freePrice) {
+        FreePrice = freePrice;
+    }
+
+
     public RuleConfig() {
         super();
     }
