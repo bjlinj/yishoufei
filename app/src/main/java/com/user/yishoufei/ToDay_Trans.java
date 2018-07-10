@@ -1,5 +1,7 @@
 package com.user.yishoufei;
 
+import android.content.Context;
+
 import org.litepal.crud.DataSupport;
 
 /**
@@ -9,6 +11,7 @@ import org.litepal.crud.DataSupport;
 public class ToDay_Trans extends DataSupport {
 
     private long Id;
+    private String  Primary_Key;
     private String  Type_Cord;
     private String Car_Num;
     private String Start_Date;
@@ -22,7 +25,9 @@ public class ToDay_Trans extends DataSupport {
     }
 
 
-    public ToDay_Trans(String car_Num, String start_date, String start_Time, String end_date, String end_Time, String money, String type_Cord) {
+
+
+    public ToDay_Trans(String car_Num, String start_date, String start_Time, String end_date, String end_Time, String money, String type_Cord,String primary_key) {
         Car_Num=car_Num;
         Start_Time = start_Time;
         End_Time = end_Time;
@@ -30,6 +35,14 @@ public class ToDay_Trans extends DataSupport {
         Type_Cord=type_Cord;
         Start_Date=start_date;
         End_Date=end_date;
+        Primary_Key=primary_key;
+    }
+    public String getPrimary_Key() {
+        return Primary_Key;
+    }
+
+    public void setPrimary_Key(String primary_Key) {
+        Primary_Key = primary_Key;
     }
 
     public String getType_Cord() {

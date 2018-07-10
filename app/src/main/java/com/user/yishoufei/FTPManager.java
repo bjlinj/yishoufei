@@ -32,9 +32,9 @@ public class FTPManager {
         }
         ftpClient.setDataTimeout(20000);//设置连接超时时间
         ftpClient.setControlEncoding("utf-8");
-        ftpClient.connect("hzlinj.f3322.net", 21);
+        ftpClient.connect("myss123.tk", 21);
         if (FTPReply.isPositiveCompletion(ftpClient.getReplyCode())) {
-            if (ftpClient.login("ysf", "ysf")) {
+            if (ftpClient.login("ysf", "nFp7ZT7RFA!")) {
                 bool = true;
                 System.out.println("ftp连接成功");
             }

@@ -18,6 +18,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,6 +90,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     private TextView invite;
     private RuleConfig ruleconfig;
     private EditText edit;
+    private EditText Config_Free_Price;
     private List<UserName> list_username;
     private String invite_num;
 
@@ -419,6 +421,10 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                     username.update(list_username.get(0).getId());
                     return true;
                 }else if(mUsername.equals("123456")&&mPassword.equals("123456")){
+                    UserName username = new UserName();
+                    username.setUsername(mUsername);
+                    username.setPassword(mPassword);
+                    username.save();
                     return true;
             }
 
@@ -456,10 +462,14 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                                                 //更新数据库
                                                 DecimalFormat df = new DecimalFormat("#0.00");//保留2位小数
                                                 Double dou = Double.parseDouble(edit.getText().toString());
+                                                //Double Free_min_dou = Double.parseDouble(Config_Free_Price.getText().toString());
+                                                //Log.d("Config_Free_Price",Free_min_dou+"=======111=1=1=1");
                                                 ruleconfig.setUnitPrice(dou);
-                                                ruleconfig.save();
+                                                ruleconfig.setFreePrice(0.0);
+                                                ruleconfig.save();//更新配置表
                                                 Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
                                                 Main_intent.putExtra("confi_data",ruleconfig.getUnitPrice()+"");
+                                                Main_intent.putExtra("confi_free_price",ruleconfig.getFreePrice()+"");
                                                 startActivity(Main_intent);//保存成功跳到主页
                                             }
 
@@ -470,10 +480,12 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                 } else {
                     for (RuleConfig rc : list_ruleconfig) {
                         ruleconfig.setUnitPrice(rc.getUnitPrice());
+                        ruleconfig.setFreePrice(rc.getFreePrice());
                     }
 
                     Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
                     Main_intent.putExtra("confi_data",ruleconfig.getUnitPrice()+"");
+                    Main_intent.putExtra("confi_free_price",ruleconfig.getFreePrice()+"");
                     startActivity(Main_intent);//跳到主页
                 }
                 //finish();

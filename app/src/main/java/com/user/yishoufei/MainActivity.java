@@ -3,8 +3,11 @@ package com.user.yishoufei;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTabHost;
@@ -31,6 +34,10 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
@@ -43,6 +50,16 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -55,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText Input_Mess_Start;
     private EditText Input_Mess_End;
     private List<ToDay_Trans> list;
+    private List<ToDay_Trans> jsonlist;
+    private List<ToDay_Trans> sreachbyidlist;
+    private List<UserName> userlist;
     private ListView tableListView;
     private long get_id;
     private Button Button_Fresh;
@@ -72,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
     private Button   Set_Button;
     private String pay;
     private TabHost tabHost;
+    //String SerialNumber ;
+
+    private String   model= android.os.Build.MODEL;//获取手机型号
+    private String carrier= android.os.Build.MANUFACTURER;//获取手机品牌
+
     SimpleDateFormat formatter_date = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formatter_Time = new SimpleDateFormat("HH:mm:ss");
     String currentdate= new IntervalTime().getCurrentdate();//获取当前时间
@@ -103,6 +128,19 @@ public class MainActivity extends AppCompatActivity {
         Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
     }
 
+    //取出用户ID
+    public String getuserID(){
+        userlist = DataSupport.findAll(UserName.class);
+        //Log.d("userlist=0=0=0=",userlist.get(0).getUsername());
+          return   (userlist.get(0).getUsername()+userlist.get(0).getPassword()+model+carrier).replace(" ", "");
+    }
+
+    //SQL查询方式
+    public void querysql(){
+        Cursor cursor = DataSupport.findBySQL("select * from ToDay_Trans where id>?", "0");
+
+
+    }
 
     //按条件模糊查询
     public void selfresh(String s) {
@@ -116,8 +154,8 @@ public class MainActivity extends AppCompatActivity {
 
     //用ID精确查找
     public List<ToDay_Trans> sreachbyid(long s) {
-        list = DataSupport.findAll(ToDay_Trans.class, s);
-        return list;
+        sreachbyidlist = DataSupport.findAll(ToDay_Trans.class, s);
+        return sreachbyidlist;
     }
 
     //按ID删除数据
@@ -125,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
         DataSupport.delete(ToDay_Trans.class, s);
         fresh();//删除之后刷新一下数据
     }
+
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -177,7 +217,10 @@ public class MainActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-
+        // SerialNumber = Installation.id(getApplicationContext());//获取全局ID
+      // final String SerialNumber = android.os.Build.SERIAL;
+      //  GetPrimaryId.getIMEI(getApplication());
+      //  Log.d("SerialNumber=======",GetPrimaryId.getIMEI(getApplication())+"===");
         homeview = findViewById(R.id.include_home);//加载主页
         //web_ui = findViewById(R.id.include_view);//加载网页
         //select = findViewById(R.id.include_select);//加载查询页
@@ -204,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
 //        tabHost.addTab(tabHost.newTabSpec("tab01")
 //                .setIndicator("标签页一")
 //                .setContent(R.id.linearLayout1));//添加第一个标签页
+
 
 
 
@@ -264,16 +308,19 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Date curDate = new Date(System.currentTimeMillis());
                     ToDay_Trans add = new ToDay_Trans(Input_Mess_Start.getText().toString().toUpperCase(),
-                            formatter_date.format(curDate), formatter_Time.format(curDate), "", "", "", "0");//0表示还未收费的
+                            formatter_date.format(curDate), formatter_Time.format(curDate), "", "", "", "0",getuserID());//0表示还未收费的
                     add.save();
-                    //Log.d("aaaaa",add.getCar_Num());
+                    //Log.d("aaaaa",SerialNumber);
                     list.clear();
                     fresh();
                     Input_Mess_Start.setText("");
                     Input_Mess_Start.setText(city_shot + city_shot_alphabet);//点击开始收费后添加简写
                     Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
                     save();//生成本地文件
-                    ftpUpload();//上传服务器
+                    //ftpUpload();//上传服务器
+                    httpJson(add,"getjson");//以json串的形式传到后台
+
+
                     // Save_mysql Sl= new Save_mysql();
                     // Sl.insert(add);
                 }
@@ -318,11 +365,11 @@ public class MainActivity extends AppCompatActivity {
                 ToDay_Trans today = list.get(position);
                 Input_Mess_End.setText(today.getCar_Num());
                 get_id = today.getId();
-                list = sreachbyid(get_id);
+                sreachbyidlist = sreachbyid(get_id);
                 Date curDate = new Date(System.currentTimeMillis());
                 AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
                 dialog.setTitle("本次收费小票");
-                String start = list.get(0).getStart_Date() + " " + list.get(0).getStart_Time();
+                String start = sreachbyidlist.get(0).getStart_Date() + " " + sreachbyidlist.get(0).getStart_Time();
                 String end = formatter_date.format(curDate) + " " + formatter_Time.format(curDate);
                 IntervalTime intervaltime = new IntervalTime();
                 String interval = intervaltime.get_IntervalTime(start, end);
@@ -340,20 +387,19 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("still_minutes====",still_minutes+"");
                     pay = df.format(0.00);//计算消费金额
                     //pay = df.format((unitprice/60)*still_minutes);//计算消费金额
-                    list.get(0).getCar_Num();
+                    sreachbyidlist.get(0).getCar_Num();
                     dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                             + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
-                            "小于设定的时间"+freeprice+"\n\n应收费用："+pay+"元");
+                            "\n\n免费分钟数为:"+freeprice+"分钟\n\n应收费用："+pay+"元");
                     dialog.setCancelable(false);
                 }else{
-                    pay = df.format((unitprice/60)*still_minutes);//计算消费金额
-                    list.get(0).getCar_Num();
+                    pay = df.format((unitprice)/60*(still_minutes-freeprice));//计算消费金额
+                    sreachbyidlist.get(0).getCar_Num();
                     dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                             + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
-                            "\n\n应收费用："+pay+"元");
+                            "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
                     dialog.setCancelable(false);
                 }
-
 
                 dialog.setPositiveButton("确定收费", new DialogInterface.OnClickListener() {
                     @Override
@@ -366,10 +412,15 @@ public class MainActivity extends AppCompatActivity {
                         today_trans.setType_Cord("1");//1表示已结账
                         today_trans.setMoney(pay);
                         today_trans.update(get_id);
-                        list.clear();
+                        Log.d("get_id=2=1=2=1",get_id+"");
+                        sreachbyidlist.clear();
                         fresh();
                         save();//生成本地文件
-                        ftpUpload();//上传服务器
+                        //ftpUpload();//上传服务器
+                        jsonlist = sreachbyid(get_id);
+                         httpJson(jsonlist.get(0),"getjson");//把最新数据传到后台
+
+
                     }
                 });
                 dialog.setNeutralButton("取消退出", new DialogInterface.OnClickListener() {
@@ -429,7 +480,6 @@ public class MainActivity extends AppCompatActivity {
                 Main_intent.putExtra("confi_free_price", ruleconfig.getFreePrice() + "");
                 startActivity(Main_intent);//跳到主页
                 Toast.makeText(MainActivity.this, "修改成功返回主页", Toast.LENGTH_SHORT).show();
-
             }
         });
 
@@ -473,8 +523,7 @@ public class MainActivity extends AppCompatActivity {
         FileOutputStream out = null;
         BufferedWriter writer = null;
         //生成文件，写入本地
-        String   model= android.os.Build.MODEL;//获取手机型号
-        String carrier= android.os.Build.MANUFACTURER;//获取手机品牌
+
         String inputText = model+"==="+carrier+"\n";
         List<ToDay_Trans> lists=getlist();
         for (ToDay_Trans list:lists){
@@ -485,6 +534,7 @@ public class MainActivity extends AppCompatActivity {
             out = openFileOutput(currentdate, Context.MODE_PRIVATE);
             writer = new BufferedWriter(new OutputStreamWriter(out));
             writer.write(inputText);
+
             //Log.d("inputTest",inputText+"=1=1=1=1==1");
         }catch (IOException e){
             e.printStackTrace();
@@ -497,6 +547,21 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    private  void httpJson(Object object ,String posthttp) {
+        Gson gs = new Gson();
+        final String objectStr = gs.toJson(object);
+        final String postinhttp=posthttp;
+        Log.d("objectStr=1=1=12=2",objectStr);
+        new Thread(new Runnable() {
+            HttpUtil HttpUtil = new HttpUtil();
+            @Override
+            public void run() {
+                HttpUtil.SendJson("http://myss123.tk:8088/ysf/"+postinhttp,objectStr);
+            }
+        }).start();
+
     }
     //ftp上传文件
     private void ftpUpload() {

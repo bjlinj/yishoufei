@@ -20,13 +20,13 @@
             android:id="@+id/price_tex"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="单价每小时"
+            android:text="单价每小时:"
             android:textSize="16sp"
             />
 
         <EditText
             android:id="@+id/price_edit"
-            android:layout_width="50dp"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:digits="0123456789."
             android:maxLength="6"
@@ -47,15 +47,16 @@
             android:id="@+id/free_price_tex"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="免费分钟数："
+            android:text="免费分钟数:"
             android:textSize="16sp"
             />
 
         <EditText
             android:id="@+id/free_price_edit"
-            android:layout_width="50dp"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:digits="0123456789."
+            android:text="0.0"
             android:maxLength="6"
 
             />
