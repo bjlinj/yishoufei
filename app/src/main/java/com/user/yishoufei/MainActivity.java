@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -27,9 +28,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +64,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static java.lang.Boolean.FALSE;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,15 +92,34 @@ public class MainActivity extends AppCompatActivity {
     private TextView Car_Num;
     private TextView Start_Time;
     private View config;
-    private EditText Config_Price;
     private EditText Config_Free_Price;
+    private EditText First_hour_edit;
+    private EditText First_yuan_edit;
+    private EditText First_min_edit;
+    private EditText After_yuan_hour;
+    private TextView After_hour;
+    private TextView After_hour_min;
     private Button   Set_Button;
     private String pay;
     private TabHost tabHost;
+    private List<RuleConfig> list_ruleconfig;
     //String SerialNumber ;
 
     private String   model= android.os.Build.MODEL;//获取手机型号
     private String carrier= android.os.Build.MANUFACTURER;//获取手机品牌
+//    private Switch sw_price_tex;//每小时X元默认开启
+//    private Switch sw_limit_tex;//每天上限金额默认关闭
+//    private Switch sw_free_price_tex;//免费分钟数默认关闭
+//    private Switch sw_hour_tex;//x小时以内默认关闭
+
+
+//    private Boolean b_price_tex=true;//每小时X元默认开启
+//    private Boolean b_limit_tex=false;//每天上限金额默认关闭
+//    private Boolean b_free_price_tex=false;//免费分钟数默认关闭
+//    private Boolean b_less_hour_edit=false;//x小时以内默认关闭
+//    private Boolean b_config_all=false;//总体设置项
+
+
 
     SimpleDateFormat formatter_date = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formatter_Time = new SimpleDateFormat("HH:mm:ss");
@@ -235,9 +259,25 @@ public class MainActivity extends AppCompatActivity {
         Start_Time=(TextView)findViewById(R.id.start_time);
         ViewGroup tableTitle = (ViewGroup) findViewById(R.id.table_title);
         config=findViewById(R.id.config);
-        Config_Price =(EditText) findViewById(R.id.price_edit);
+        //Config_Price =(EditText) findViewById(R.id.price_edit);
         Config_Free_Price=(EditText)findViewById(R.id.free_price_edit);
+        //获取焦点   https://blog.csdn.net/aaawqqq/article/details/50259713
+         First_hour_edit=(EditText)findViewById(R.id.first_hour_edit);
+        First_hour_edit.setFocusable(true);
+        First_hour_edit.setFocusableInTouchMode(true);
+        First_yuan_edit=(EditText)findViewById(R.id.first_yuan_edit);
+        First_min_edit=(EditText)findViewById(R.id.first_min_edit);
+        First_min_edit.setFocusable(true);
+        First_min_edit.setFocusableInTouchMode(true);
+        After_yuan_hour=(EditText)findViewById(R.id.after_yuan_edit);
+        After_hour=(TextView)findViewById(R.id.after_hour);
+        After_hour_min=(TextView)findViewById(R.id.after_hour_min);
+
         Set_Button = (Button) findViewById(R.id.set_price);
+//        sw_price_tex =(Switch)findViewById(R.id.sw_price_tex);//单价每小时设置，默认为开
+//        sw_limit_tex=(Switch)findViewById(R.id.sw_limit_tex);//每天上限金额默认关闭
+//        sw_free_price_tex=(Switch)findViewById(R.id.sw_free_price_tex);//免费分钟数默认关闭
+//        sw_hour_tex=(Switch)findViewById(R.id.sw_hour_tex);//X小时以内X元，之后每小时X元
 
         TabHost tab = (FragmentTabHost) findViewById(android.R.id.tabhost);  //获取tabHost对象
 //        tab.setup();//初始化TabHost组件
@@ -296,6 +336,86 @@ public class MainActivity extends AppCompatActivity {
         }
         Spinner_Alphabet_city.setOnItemSelectedListener(new SpinnerAlphabetXMLSelectedListener());//字母监听
         Spinner_City.setOnItemSelectedListener(new SpinnerXMLSelectedListener());//简写选择监听
+//
+//        //是否开启单位每小时
+//        sw_price_tex.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView,
+//                                         boolean isChecked) {
+//                // TODO Auto-generated method stub
+//                if (isChecked) {
+//                    b_price_tex=true;
+//                    b_less_hour_edit=false;
+//                    Toast.makeText(MainActivity.this, "开启", Toast.LENGTH_SHORT).show();
+//                    sw_hour_tex.setChecked(b_less_hour_edit);//X小时以内X元，之后每小时X元 关闭
+//                } else {
+//                    b_price_tex=false;
+//                    Toast.makeText(MainActivity.this, "关闭", Toast.LENGTH_SHORT).show();
+//
+//                }
+//            }
+//        });
+//
+//        //免费分钟数默认关闭
+//        sw_free_price_tex.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView,
+//                                         boolean isChecked) {
+//                // TODO Auto-generated method stub
+//                if (isChecked) {
+//                    Toast.makeText(MainActivity.this, "开启", Toast.LENGTH_SHORT).show();
+//                    b_free_price_tex=true;
+//                    b_less_hour_edit=false;
+//                    sw_hour_tex.setChecked(b_less_hour_edit);//X小时以内X元，之后每小时X元 关闭
+//                } else {
+//                    b_free_price_tex=false;
+//                    Toast.makeText(MainActivity.this, "关闭", Toast.LENGTH_SHORT).show();
+//
+//                }
+//            }
+//        });
+//
+//        //每天上限金额默认关闭
+//        sw_limit_tex.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView,
+//                                         boolean isChecked) {
+//                // TODO Auto-generated method stub
+//                if (isChecked) {
+//                    Toast.makeText(MainActivity.this, "开启", Toast.LENGTH_SHORT).show();
+//                    b_limit_tex=true;
+//                } else {
+//                    b_limit_tex=false;
+//                    Toast.makeText(MainActivity.this, "关闭", Toast.LENGTH_SHORT).show();
+//
+//                }
+//            }
+//        });
+//        //x小时以内默认关闭
+//        sw_hour_tex.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView,
+//                                         boolean isChecked) {
+//                // TODO Auto-generated method stub
+//                if (isChecked) {
+//                    Toast.makeText(MainActivity.this, "开启", Toast.LENGTH_SHORT).show();
+//                    b_less_hour_edit=true;
+//                    b_limit_tex=false;
+//                    b_free_price_tex=false;
+//                    sw_price_tex.setChecked(b_limit_tex);//X小时以内X元，之后每小时X元 关闭
+//                    sw_free_price_tex.setChecked(b_free_price_tex);//免费分钟数关闭
+//                } else {
+//                    b_less_hour_edit=false;
+//                    Toast.makeText(MainActivity.this, "关闭", Toast.LENGTH_SHORT).show();
+//
+//                }
+//            }
+//        });
+//
 
         //添加开始收费点击事件
         Start_Money.setOnClickListener(new View.OnClickListener() {
@@ -375,12 +495,12 @@ public class MainActivity extends AppCompatActivity {
                 String interval = intervaltime.get_IntervalTime(start, end);
                 long  still_minutes =intervaltime.get_still_minutes(start, end);
                 //double  unitprice=new RuleConfig().getUnitPrice();
-                double unitprice= Double.parseDouble(Config_Price.getText().toString());
-                Log.d("Config_Free_Price====",Config_Free_Price.getText().toString());
-                if (Config_Free_Price ==null) {
-                    Config_Free_Price.setText("0.00");
-                }
+               // double unitprice= Double.parseDouble(Config_Price.getText().toString());
                 double freeprice=Double.parseDouble(Config_Free_Price.getText().toString());
+                double first_hour_edit = Double.parseDouble(First_hour_edit.getText().toString());
+                double first_yuan_edit=Double.parseDouble(First_yuan_edit.getText().toString());
+                double first_min_edit=Double.parseDouble(First_min_edit.getText().toString());
+                double after_yuan_edit=Double.parseDouble(After_yuan_hour.getText().toString());
                 DecimalFormat df = new DecimalFormat("#0.00");
                 if(freeprice>=still_minutes){
                     Log.d("freeprice====",freeprice+"");
@@ -393,12 +513,25 @@ public class MainActivity extends AppCompatActivity {
                             "\n\n免费分钟数为:"+freeprice+"分钟\n\n应收费用："+pay+"元");
                     dialog.setCancelable(false);
                 }else{
-                    pay = df.format((unitprice)/60*(still_minutes-freeprice));//计算消费金额
-                    sreachbyidlist.get(0).getCar_Num();
-                    dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
-                            + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
-                            "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
-                    dialog.setCancelable(false);
+                    //pay = df.format((unitprice)/60*(still_minutes-freeprice));//计算消费金额
+
+                    if((still_minutes-freeprice)<first_hour_edit*60){
+                        pay=df.format((still_minutes-freeprice)*first_yuan_edit/first_min_edit);
+                        sreachbyidlist.get(0).getCar_Num();
+                        dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
+                                + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
+                                "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
+                        dialog.setCancelable(false);
+                    }else{
+                       pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+((still_minutes-freeprice)-first_hour_edit*60)*after_yuan_edit);
+                        sreachbyidlist.get(0).getCar_Num();
+                        dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
+                                + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
+                                "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
+                        dialog.setCancelable(false);
+
+                    }
+
                 }
 
                 dialog.setPositiveButton("确定收费", new DialogInterface.OnClickListener() {
@@ -451,34 +584,87 @@ public class MainActivity extends AppCompatActivity {
         });
         //设置收费单价
         //数据库获取收费单价
-        Intent intent = getIntent();
-        Config_Price.setText(intent.getStringExtra("confi_data"));
-        Config_Free_Price.setText(intent.getStringExtra("confi_free_price"));
+        //Config_Price.setText(intent.getStringExtra("confi_data"));
+        //Config_Free_Price.setText(intent.getStringExtra("confi_free_price"));
+        list_ruleconfig = DataSupport.findAll(RuleConfig.class);
+                   for (RuleConfig rc : list_ruleconfig) {
+                       Config_Free_Price.setText(rc.getFreePrice()+"");
+                       First_hour_edit.setText(rc.getFirst_hour()+"");
+                       First_yuan_edit.setText(rc.getFirst_yuan_hour()+"");
+                       First_min_edit.setText(rc.getFirst_min()+"");
+                       After_yuan_hour.setText(rc.getAfter_yuan_hour()+"");
+                       After_hour.setText( First_hour_edit.getText().toString());
+                       After_hour_min.setText(First_min_edit.getText().toString());
+
+                   }
+
+                   ///光标焦点操作
+        First_hour_edit.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {
+
+            @Override
+
+            public void onFocusChange(View v, boolean hasFocus) {
+
+                if (hasFocus) {
+                    // 获得焦点
+                } else {
+
+                    After_hour.setText( First_hour_edit.getText().toString());
+                }
+            }
+
+        });
+        ///光标焦点操作
+        First_min_edit.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {
+
+            @Override
+
+            public void onFocusChange(View v, boolean hasFocus) {
+
+                if (hasFocus) {
+                    // 获得焦点
+                } else {
+                    //失去焦点
+                    After_hour_min.setText(First_min_edit.getText().toString());
+                }
+            }
+
+        });
+
 
         Set_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RuleConfig ruleconfig =  new RuleConfig();
-                String config_str  = Config_Price.getText().toString();
+                //String config_str  = Config_Price.getText().toString();
                 String config_free_Price =Config_Free_Price.getText().toString();
+                String first_hour_edit = First_hour_edit.getText().toString();
+                String first_yuan_edit=First_yuan_edit.getText().toString();
+                String first_min_edit=First_min_edit.getText().toString();
+                String after_yuan_hour=After_yuan_hour.getText().toString();
+
+
                 //Log.d("config_str",config_str+"======");
-                if(config_str==null || config_str.equals("")){
+                if(config_free_Price==null || config_free_Price.equals("")||first_hour_edit==null || first_hour_edit.equals("")||
+                first_yuan_edit==null || first_yuan_edit.equals("")||first_min_edit==null || first_min_edit.equals("") ||after_yuan_hour==null
+                        ||after_yuan_hour.equals("")){
                     Toast.makeText(MainActivity.this, "请输入数值", Toast.LENGTH_SHORT).show();
                 }else {
-                    ruleconfig.setUnitPrice(Double.parseDouble(Config_Price.getText().toString()));
-                }
-                if(config_free_Price==null||config_free_Price.equals("")){
-                    Toast.makeText(MainActivity.this,"",Toast.LENGTH_SHORT).show();
-                }
-                else {
                     ruleconfig.setFreePrice(Double.parseDouble(config_free_Price));
+                    ruleconfig.setFirst_hour(Double.parseDouble(first_hour_edit));
+                    ruleconfig.setFirst_yuan_hour(Double.parseDouble(first_yuan_edit));
+                    ruleconfig.setFirst_min(Double.parseDouble(first_min_edit));
+                    ruleconfig.setAfter_yuan_hour(Double.parseDouble(after_yuan_hour));
+
+
                 }
-                ruleconfig.updateAll();//跟新新的收费单价
-                Intent Main_intent = new Intent(MainActivity.this, MainActivity.class);
+                ruleconfig.updateAll();//跟新新数据库
+               // b_config_all=true;//修改设置页面
+                //Intent Main_intent = new Intent(MainActivity.this, MainActivity.class);
                 //把设置好的参数带到主页
-                Main_intent.putExtra("confi_data", ruleconfig.getUnitPrice() + "");
-                Main_intent.putExtra("confi_free_price", ruleconfig.getFreePrice() + "");
-                startActivity(Main_intent);//跳到主页
+               // Main_intent.putExtra("confi_data", ruleconfig.getUnitPrice() + "");
+                //Main_intent.putExtra("confi_free_price", ruleconfig.getFreePrice() + "");
+                //startActivity(Main_intent);//跳到主页
                 Toast.makeText(MainActivity.this, "修改成功返回主页", Toast.LENGTH_SHORT).show();
             }
         });
@@ -509,14 +695,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
-            webView.goBack();
-            return true;
-        }
-        return false;
-    }
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+//           // webView.goBack();
+//            //return true;
+//        }
+//        return false;
+//    }
 
     //写文件
     public void save(){

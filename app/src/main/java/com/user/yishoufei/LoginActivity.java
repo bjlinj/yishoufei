@@ -93,6 +93,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     private EditText Config_Free_Price;
     private List<UserName> list_username;
     private String invite_num;
+    private EditText first_hour_edit;
 
 
     //http://blog.csdn.net/jasonkent27/article/details/40590891 代码解析
@@ -100,6 +101,10 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+
+        first_hour_edit=(EditText)findViewById(R.id.first_hour_edit);
+
 
         bingPicImg = (ImageView) findViewById(R.id.bing_pic_img);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);//设置缓存
@@ -443,51 +448,62 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                 //判断是否设置收费单价
                 ruleconfig = new RuleConfig();
                 list_ruleconfig = DataSupport.findAll(RuleConfig.class);
+                Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
+                //如果没有设置配置项
                 if (null == list_ruleconfig || list_ruleconfig.size() == 0) {
-                    LayoutInflater factory = LayoutInflater.from(LoginActivity.this);//提示框
-                    final View view = factory.inflate(R.layout.dialog_edittext, null);//这里必须是final的
-                    edit = (EditText) view.findViewById(R.id.dialog_edittext);//获得输入框对象
+                    DecimalFormat df = new DecimalFormat("#0.00");//保留2位小数
+//                    Double dou = Double.parseDouble(first_hour_edit.getText().toString());
+                       ruleconfig.setFirst_hour(1);
+                       ruleconfig.setAfter_yuan_hour(1.5);
+                       ruleconfig.setFirst_min(1.5);
+                       ruleconfig.setAfter_yuan_hour(2.25);
+                       ruleconfig.setFreePrice(0.0);
+                       ruleconfig.save();//更新配置表
+                    startActivity(Main_intent);//跳到主页
 
-                    new AlertDialog.Builder(LoginActivity.this)
-                            .setTitle("请输入收费标准")//提示框标题
-                            .setView(view)
-                            .setPositiveButton("确定",//提示框的两个按钮
-                                    new android.content.DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog,
-                                                            int which) {
-                                            if (edit.getText().toString() == null || edit.getText().toString().equals("")) {
-                                                Toast.makeText(LoginActivity.this, "请输入收费标准", Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                //更新数据库
-                                                DecimalFormat df = new DecimalFormat("#0.00");//保留2位小数
-                                                Double dou = Double.parseDouble(edit.getText().toString());
-                                                //Double Free_min_dou = Double.parseDouble(Config_Free_Price.getText().toString());
-                                                //Log.d("Config_Free_Price",Free_min_dou+"=======111=1=1=1");
-                                                ruleconfig.setUnitPrice(dou);
-                                                ruleconfig.setFreePrice(0.0);
-                                                ruleconfig.save();//更新配置表
-                                                Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
-                                                Main_intent.putExtra("confi_data",ruleconfig.getUnitPrice()+"");
-                                                Main_intent.putExtra("confi_free_price",ruleconfig.getFreePrice()+"");
-                                                startActivity(Main_intent);//保存成功跳到主页
-                                            }
-
-                                            //事件
-                                        }
-                                    }).setNegativeButton("取消", null).create().show();
+//                    LayoutInflater factory = LayoutInflater.from(LoginActivity.this);//提示框
+//                    final View view = factory.inflate(R.layout.dialog_edittext, null);//这里必须是final的
+//                    edit = (EditText) view.findViewById(R.id.dialog_edittext);//获得输入框对象
+//
+//                    new AlertDialog.Builder(LoginActivity.this)
+//                            .setTitle("请输入收费标准(其他设置请进去后到设置页)")//提示框标题
+//                            .setView(view)
+//                            .setPositiveButton("确定",//提示框的两个按钮
+//                                    new android.content.DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog,
+//                                                            int which) {
+//                                            if (edit.getText().toString() == null || edit.getText().toString().equals("")) {
+//                                                Toast.makeText(LoginActivity.this, "请输入收费标准", Toast.LENGTH_SHORT).show();
+//                                            } else {
+//                                                //更新数据库
+//                                                DecimalFormat df = new DecimalFormat("#0.00");//保留2位小数
+//                                                Double dou = Double.parseDouble(edit.getText().toString());
+//                                                //Double Free_min_dou = Double.parseDouble(Config_Free_Price.getText().toString());
+//                                                //Log.d("Config_Free_Price",Free_min_dou+"=======111=1=1=1");
+//                                                ruleconfig.setUnitPrice(dou);
+//                                                ruleconfig.setFreePrice(0.0);
+//                                                ruleconfig.save();//更新配置表
+//                                                Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
+//                                                Main_intent.putExtra("ruleconfig", ruleconfig);
+//                                                //Main_intent.putExtra("confi_data",ruleconfig.getUnitPrice()+"");
+//                                                //Main_intent.putExtra("confi_free_price",ruleconfig.getFreePrice()+"");
+//                                                startActivity(Main_intent);//保存成功跳到主页
+//                                            }
+//
+//                                            //事件
+//                                        }
+//                                    }).setNegativeButton("取消", null).create().show();
 
                 } else {
-                    for (RuleConfig rc : list_ruleconfig) {
-                        ruleconfig.setUnitPrice(rc.getUnitPrice());
-                        ruleconfig.setFreePrice(rc.getFreePrice());
-                    }
+//                    for (RuleConfig rc : list_ruleconfig) {
+////                        ruleconfig.setUnitPrice(rc.getUnitPrice());
+////                        ruleconfig.setFreePrice(rc.getFreePrice());
+////                    }
 
-                    Intent Main_intent = new Intent(LoginActivity.this, MainActivity.class);
-                    Main_intent.putExtra("confi_data",ruleconfig.getUnitPrice()+"");
-                    Main_intent.putExtra("confi_free_price",ruleconfig.getFreePrice()+"");
                     startActivity(Main_intent);//跳到主页
                 }
+
                 //finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
