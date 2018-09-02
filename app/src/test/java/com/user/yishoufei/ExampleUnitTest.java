@@ -1,5 +1,7 @@
 package com.user.yishoufei;
 
+import android.util.Log;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -12,6 +14,7 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+         assertEquals(4, 2 + 2);
+        //Log.d("Random_Num.getexpire();",Random_Num.getexpire());
     }
 }

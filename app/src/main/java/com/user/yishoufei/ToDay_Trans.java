@@ -19,15 +19,31 @@ public class ToDay_Trans extends DataSupport {
     private String End_Time;
     private String End_Date;
     private String Money;
+    private String Is_day;//判断白天收费还是晚上收费1为白天0为晚上
+    private String Is_Steal;//判断是否逃票1表示逃票
 
     public ToDay_Trans() {
         super();
     }
 
+    public String getIs_Steal() {
+        return Is_Steal;
+    }
 
+    public void setIs_Steal(String is_Steal) {
+        Is_Steal = is_Steal;
+    }
 
+    public String getIs_day() {
+        return Is_day;
+    }
 
-    public ToDay_Trans(String car_Num, String start_date, String start_Time, String end_date, String end_Time, String money, String type_Cord,String primary_key) {
+    public void setIs_day(String is_day) {
+        Is_day = is_day;
+    }
+
+    public ToDay_Trans(String car_Num, String start_date, String start_Time, String end_date, String end_Time, String money, String type_Cord, String primary_key
+                        ,String is_day,String is_steal) {
         Car_Num=car_Num;
         Start_Time = start_Time;
         End_Time = end_Time;
@@ -36,6 +52,8 @@ public class ToDay_Trans extends DataSupport {
         Start_Date=start_date;
         End_Date=end_date;
         Primary_Key=primary_key;
+        Is_day=is_day;
+        Is_Steal=is_steal;
     }
     public String getPrimary_Key() {
         return Primary_Key;

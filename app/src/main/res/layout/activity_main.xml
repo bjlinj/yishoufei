@@ -20,11 +20,11 @@
        layout="@layout/home"
        android:visibility="visible">
    </include>
-<!--   <include
-       android:id="@+id/include_view"
-       layout="@layout/web_ui"
-       android:visibility="gone">
-   </include>-->
+        <include
+            android:id="@+id/include_search"
+            layout="@layout/search"
+            android:visibility="gone">
+        </include>
    <include
             android:id="@+id/include_select"
             layout="@layout/select"

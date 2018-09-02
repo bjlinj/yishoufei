@@ -1,5 +1,8 @@
 package com.user.yishoufei;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,12 +32,16 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -50,7 +57,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -70,13 +79,14 @@ import static java.lang.Boolean.FALSE;
 public class MainActivity extends AppCompatActivity {
 
     private View homeview;
-    //private View web_ui;
+    private View search_view;
     private View select;
     private WebView webView;
     private Button Start_Money;
     private EditText Input_Mess_Start;
     private EditText Input_Mess_End;
     private List<ToDay_Trans> list;
+    private List<ToDay_Trans> List_Steal;
     private List<ToDay_Trans> jsonlist;
     private List<ToDay_Trans> sreachbyidlist;
     private List<UserName> userlist;
@@ -99,10 +109,39 @@ public class MainActivity extends AppCompatActivity {
     private EditText After_yuan_hour;
     private TextView After_hour;
     private TextView After_hour_min;
+    private TextView Day_start_time; //设置白天开始时间
+    private TextView Day_end_time;//设置白天结束时间
+
+    private EditText  N_First_hour_edit;//晚上首1小时收费默认为1
+    private EditText  N_First_yuan_hour_edit;//晚上首1小时收费1元/60分钟
+    private EditText  N_First_min_edit;//晚上首1小时收费1元/60分钟
+    private EditText  N_After_yuan_hour_edit;//晚上1小时后1元/60分钟
+    private EditText N_FreePrice;//晚上设置免费分钟数
+    private TextView N_After_hour;
+    private TextView N_After_hour_min;
+    private TextView Search_start_date;
+    private TextView Search_end_date;
+    private RadioGroup Search_Steal;
+    private String Steal_Searched;
+    private Button Get_Search;
+    private ListView Search_ListView;
+    private List<ToDay_Trans>  List_Steal_card ;
+
+
     private Button   Set_Button;
     private String pay;
     private TabHost tabHost;
     private List<RuleConfig> list_ruleconfig;
+    private TimePicker Get_Time;
+
+
+    // 获取日历的一个对象
+    Calendar  calendar = Calendar.getInstance();
+    private int hour = calendar.get(Calendar.HOUR);
+    private int min = calendar.get(Calendar.MINUTE);
+    int Year = calendar.get(Calendar.YEAR);
+    int Month = calendar.get(Calendar.MONTH);
+    int Day = calendar.get(Calendar.DAY_OF_MONTH);
     //String SerialNumber ;
 
     private String   model= android.os.Build.MODEL;//获取手机型号
@@ -134,23 +173,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     //刷新列表
-    public void fresh() {
-        list = DataSupport.where("Type_Cord = ?", "0").find(ToDay_Trans.class);
-        tableListView = (ListView) findViewById(R.id.list);
-
-        //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
-        //Collections.sort(list,new SortComparator());
-//        for(ToDay_Trans attribute : list) {
-//            System.out.println(attribute.getId());
-//        }
-        TableAdapter adapter = new TableAdapter(MainActivity.this, list);
-
-        tableListView.setAdapter(adapter);
-        Input_Mess_Start.setText("");
-        Input_Mess_End.setText("");
-        Input_Mess_Start.setText(city_shot + city_shot_alphabet);//刷新后添加简写
-        Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
-    }
+//    public void fresh() {
+//
+//        list = DataSupport.where("Type_Cord = ?", "0").find(ToDay_Trans.class);
+//        tableListView = (ListView) findViewById(R.id.listview);
+//
+//        //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
+//        //Collections.sort(list,new SortComparator());
+//       for(ToDay_Trans attribute : list) {
+//           Log.d("get_card",attribute.getCar_Num());
+//       }
+//        TableAdapter adapter = new TableAdapter(MainActivity.this, list);
+//
+//        tableListView.setAdapter(adapter);
+//        Input_Mess_Start.setText("");
+//        //Input_Mess_End.setText("");
+//        Input_Mess_Start.setText(city_shot + city_shot_alphabet);//刷新后添加简写
+//        Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
+//    }
 
     //取出用户ID
     public String getuserID(){
@@ -166,14 +206,38 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //按条件模糊查询
+    //按条件模糊刷新
     public void selfresh(String s) {
-        list.clear();
-        list = DataSupport.order("Start_Date desc").order("Start_Time desc").where("Car_Num like ? and Type_Cord = ?", "%" + s + "%" ,"0").find(ToDay_Trans.class);
-        tableListView = (ListView) findViewById(R.id.list);
+        list = DataSupport.order("Start_Date desc").order("Start_Time desc").where("Car_Num like ? and Type_Cord = ? and Is_Steal = ?", "%" + s + "%" ,"0","0").find(ToDay_Trans.class);
+        tableListView = (ListView) findViewById(R.id.listview);
         //TodayAdapter adapter = new TodayAdapter(MainActivity.this,R.layout.list_item, list);
         TableAdapter adapter = new TableAdapter(MainActivity.this, list);
         tableListView.setAdapter(adapter);
+        Input_Mess_Start.setText("");
+        //Input_Mess_End.setText("");
+        Input_Mess_Start.setText(city_shot + city_shot_alphabet);//刷新后添加简写
+        Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
+
+    }
+
+    //逃票车牌查询
+    public void Sel_Steal(String start_date,String end_date,String Is_Steal) throws ParseException{
+        //Log.d("======1=1=",start_date+end_date+Is_Steal);
+        List_Steal =DataSupport.order("Start_Date ").order("Start_Time ").where("Is_Steal like ? and Start_Date >=? and Start_Date<=?","%"+Is_Steal+"%",start_date,end_date).find(ToDay_Trans.class);
+        Search_ListView=(ListView)findViewById(R.id.search_listview);
+
+        SearchAdapter adapter = new SearchAdapter(MainActivity.this, List_Steal);
+        Search_ListView.setAdapter(adapter);
+//        for (ToDay_Trans rc : List_Steal){
+//            Log.d("getCar_Num",rc.getCar_Num());
+//        }
+    }
+
+
+    public List<ToDay_Trans> get_Steal_card(String card_num){
+        return  DataSupport.order("Start_Date ").order("Start_Time ").where("Car_Num = ? and Is_Steal = ?  ",card_num.toUpperCase(),"1").find(ToDay_Trans.class);
+
+
     }
 
     //用ID精确查找
@@ -185,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
     //按ID删除数据
     public void delfresh(long s) {
         DataSupport.delete(ToDay_Trans.class, s);
-        fresh();//删除之后刷新一下数据
+        selfresh("");//删除之后刷新一下数据
     }
 
 
@@ -200,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_home:
                     //home_button.setText(R.string.title_home);
                     homeview.setVisibility(View.VISIBLE);
-                    //web_ui.setVisibility(View.GONE);
+                    search_view.setVisibility(View.GONE);
                     config.setVisibility(View.GONE);
                     return true;
 /*                case R.id.navigation_dashboard:
@@ -214,7 +278,12 @@ public class MainActivity extends AppCompatActivity {
                 //查询页
                 case R.id.navigation_dashboard:
                     homeview.setVisibility(View.GONE);
-                    //web_ui.setVisibility(View.VISIBLE);
+                    search_view.setVisibility(View.VISIBLE);
+                    if(Search_start_date.getText().toString()==null||Search_start_date.getText().toString().equals("")){
+                        Search_start_date.setText(formatter_date.format(new Date()));
+                        Search_end_date.setText(formatter_date.format(new Date()));
+                    }
+
                     // select.setVisibility(View.VISIBLE);
                     config.setVisibility(View.GONE);
                     return true;
@@ -222,8 +291,9 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.navigation_notifications:
                     // mTextMessage.setText(R.string.title_notifications);
                     homeview.setVisibility(View.GONE);
-                    //web_ui.setVisibility(View.GONE);
+                    search_view.setVisibility(View.GONE);
                     config.setVisibility(View.VISIBLE);
+                    getConfigSet();//加载参数
                     return true;
             }
             return false;
@@ -236,6 +306,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         LitePal.getDatabase();
+
         final ActionBar actionBar = getSupportActionBar();//隐藏默认的控件
         if (actionBar != null) {
             actionBar.hide();
@@ -246,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
       //  GetPrimaryId.getIMEI(getApplication());
       //  Log.d("SerialNumber=======",GetPrimaryId.getIMEI(getApplication())+"===");
         homeview = findViewById(R.id.include_home);//加载主页
-        //web_ui = findViewById(R.id.include_view);//加载网页
+        search_view = findViewById(R.id.include_search);//加载搜索页
         //select = findViewById(R.id.include_select);//加载查询页
         webView = (WebView) findViewById(R.id.web_view);//加载设置页
         Start_Money = (Button) findViewById(R.id.Button_Start);
@@ -263,15 +334,32 @@ public class MainActivity extends AppCompatActivity {
         Config_Free_Price=(EditText)findViewById(R.id.free_price_edit);
         //获取焦点   https://blog.csdn.net/aaawqqq/article/details/50259713
          First_hour_edit=(EditText)findViewById(R.id.first_hour_edit);
-        First_hour_edit.setFocusable(true);
-        First_hour_edit.setFocusableInTouchMode(true);
         First_yuan_edit=(EditText)findViewById(R.id.first_yuan_edit);
         First_min_edit=(EditText)findViewById(R.id.first_min_edit);
-        First_min_edit.setFocusable(true);
-        First_min_edit.setFocusableInTouchMode(true);
         After_yuan_hour=(EditText)findViewById(R.id.after_yuan_edit);
         After_hour=(TextView)findViewById(R.id.after_hour);
         After_hour_min=(TextView)findViewById(R.id.after_hour_min);
+        Get_Time=(TimePicker) findViewById(R.id.tpPicker);
+        Day_start_time=(TextView)findViewById(R.id.day_start_date_fee);//设置白天开始时间
+        Day_end_time=(TextView)findViewById(R.id.day_end_date_fee);//设置白天结束时间
+        N_After_hour=(TextView)findViewById(R.id.n_after_hour);
+        N_After_hour_min=(TextView)findViewById(R.id.n_after_hour_min);
+        N_First_hour_edit=(EditText)findViewById(R.id.n_first_hour_edit);
+        N_First_hour_edit.setFocusable(true);//获取焦点
+        N_First_hour_edit.setFocusableInTouchMode(true);//获取焦点
+        N_First_yuan_hour_edit=(EditText)findViewById(R.id.n_first_yuan_edit);
+        N_First_min_edit=(EditText)findViewById(R.id.n_first_min_edit);
+        N_First_min_edit.setFocusable(true);//获取焦点
+        N_First_min_edit.setFocusableInTouchMode(true);//获取焦点
+        N_After_yuan_hour_edit=(EditText)findViewById(R.id.n_after_yuan_edit);
+        N_FreePrice=(EditText)findViewById(R.id.n_free_price_edit);
+        Search_start_date=(TextView)findViewById(R.id.search_start_date) ;
+        Search_end_date=(TextView)findViewById(R.id.search_end_date) ;
+        Search_Steal=(RadioGroup)findViewById(R.id.radioGroup);
+        Get_Search=(Button)findViewById(R.id.getsearch);
+
+
+
 
         Set_Button = (Button) findViewById(R.id.set_price);
 //        sw_price_tex =(Switch)findViewById(R.id.sw_price_tex);//单价每小时设置，默认为开
@@ -292,7 +380,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         tableTitle.setBackgroundColor(Color.parseColor("#B4B3B3"));
-        fresh();//初始化加载刷新数据库
+        selfresh("");//初始化加载刷新数据库
+        getConfigSet();//加载参数
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -416,7 +505,47 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 //
+//        // 初始化并且设置TimePicker
+//        Get_Time.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+//            @Override
+//            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+//                setTitle(hourOfDay + ":" + minute);
+//                Get_Time.setIs24HourView(true);
+//            }
+//        });
+//        // 时间对话框
+//        new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+//            @Override
+//            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+//                setTitle(hourOfDay + ":" + minute);
+//            }
+//        }, hour, min, true).show();
 
+        //设置白天开始时间
+        Day_start_time.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        setTitle(hourOfDay + ":" + minute);
+                        Day_start_time.setText(String.format("%02d", hourOfDay)+ ":" + String.format("%02d", minute));
+                    }
+                }, hour, min, true).show();
+            }
+        });
+        //设置白天结束时间
+        Day_end_time.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        setTitle(hourOfDay + ":" + minute);
+                        Day_end_time.setText(String.format("%02d", hourOfDay)+ ":" + String.format("%02d", minute));
+                       // Log.d("Day_end_time",(String.format("%02d", hourOfDay)+ ":" + String.format("%02d", minute)));
+                    }
+                }, hour, min, true).show();
+            }
+        });
         //添加开始收费点击事件
         Start_Money.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -426,23 +555,83 @@ public class MainActivity extends AppCompatActivity {
                 if (input_mess_start.equals(city_shot + city_shot_alphabet)||input_mess_start.length()==0) {
                     Toast.makeText(MainActivity.this, "请输入车牌号", Toast.LENGTH_SHORT).show();
                 } else {
-                    Date curDate = new Date(System.currentTimeMillis());
-                    ToDay_Trans add = new ToDay_Trans(Input_Mess_Start.getText().toString().toUpperCase(),
-                            formatter_date.format(curDate), formatter_Time.format(curDate), "", "", "", "0",getuserID());//0表示还未收费的
-                    add.save();
-                    //Log.d("aaaaa",SerialNumber);
-                    list.clear();
-                    fresh();
-                    Input_Mess_Start.setText("");
-                    Input_Mess_Start.setText(city_shot + city_shot_alphabet);//点击开始收费后添加简写
-                    Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
-                    save();//生成本地文件
-                    //ftpUpload();//上传服务器
-                    httpJson(add,"getjson");//以json串的形式传到后台
+                    try {
+                        Date curDate = new Date(System.currentTimeMillis());
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                        String now = sdf.format(new Date());
+                        B_isset_Right_time b_isset_Right_time = new B_isset_Right_time();
+                        Boolean is_day_time = b_isset_Right_time.is_day_time(now, Day_start_time.getText() + "", Day_end_time.getText() + "");
+                        List_Steal_card = get_Steal_card(input_mess_start);
+
+                        //判断最近是否有逃票行为
+                        if (List_Steal_card.size()==0 || List_Steal_card==null) {
+
+                        }else{
+                            Log.d("List_Steal_card",List_Steal_card.get(0).getCar_Num());
+                            AlertDialog.Builder dialog_steal = new AlertDialog.Builder(MainActivity.this);
+                            String start = List_Steal_card.get(0).getStart_Date() + " " + List_Steal_card.get(0).getStart_Time();
+                            String end =  List_Steal_card.get(0).getEnd_Date()+ " " + List_Steal_card.get(0).getEnd_Time();
+                            IntervalTime intervaltime = new IntervalTime();
+                            String interval = intervaltime.get_IntervalTime(start, end);
+                            long  still_minutes =intervaltime.get_still_minutes(start, end);
+                            dialog_steal.setTitle("最近一次逃票");
+                            dialog_steal.setMessage("\n车牌号码：" + List_Steal_card.get(0).getCar_Num() + "\n\n" + "开始时间：" + List_Steal_card.get(0).getStart_Date()+" "+List_Steal_card.get(0).getStart_Time()
+                                    + "\n\n" + "结束时间：" + List_Steal_card.get(0).getEnd_Date()+" "+ List_Steal_card.get(0).getEnd_Time()+ "\n\n" + "持续时间：" + interval+
+                                    "\n\n应收费用："+List_Steal_card.get(0).getMoney()+"元");
+
+                            dialog_steal.setPositiveButton("确认补缴", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //UPDATE 数据库
+                                    ToDay_Trans today_trans = new ToDay_Trans();
+                                    today_trans.setIs_Steal("0");//非逃票
+                                    today_trans.update(List_Steal_card.get(0).getId());
+                                    // Log.d("get_id=2=1=2=1",get_id+"");
+                                    Toast.makeText(MainActivity.this, "补缴成功", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+
+                            dialog_steal.setNeutralButton("还未补缴", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(MainActivity.this, "下次继续提醒", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            dialog_steal.show();
+
+                        }
+
+                            //Log.d("传输时间",now+Day_start_time.getText()+""+Day_end_time.getText()+"");
+                            //Log.d("结果",is_day_time+"");
+                            String is_day_flay;
+                            if (is_day_time) {
+                                is_day_flay = "1";
+                            } else {
+                                is_day_flay = "0";
+                            }
+                            ToDay_Trans add = new ToDay_Trans(Input_Mess_Start.getText().toString().toUpperCase(),
+                                    formatter_date.format(curDate), formatter_Time.format(curDate), "", "", "", "0", getuserID(), is_day_flay, "0");//0表示还未收费的
+                            add.save();
+                            //Log.d("aaaaa",SerialNumber);
+                            list.clear();
+                            selfresh("");
+                            Input_Mess_Start.setText("");
+                            Input_Mess_Start.setText(city_shot + city_shot_alphabet);//点击开始收费后添加简写
+                            Input_Mess_Start.setSelection(Input_Mess_Start.getText().length());
+                            save();//生成本地文件
+                            //ftpUpload();//上传服务器
+                            httpJson(add, "getjson");//以json串的形式传到后台
 
 
-                    // Save_mysql Sl= new Save_mysql();
-                    // Sl.insert(add);
+                            // Save_mysql Sl= new Save_mysql();
+                            // Sl.insert(add);
+
+                    }
+
+                    catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -474,7 +663,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 list.clear();
-                fresh();
+                selfresh("");
             }
         });
         //添加列表点击事件
@@ -488,7 +677,6 @@ public class MainActivity extends AppCompatActivity {
                 sreachbyidlist = sreachbyid(get_id);
                 Date curDate = new Date(System.currentTimeMillis());
                 AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
-                dialog.setTitle("本次收费小票");
                 String start = sreachbyidlist.get(0).getStart_Date() + " " + sreachbyidlist.get(0).getStart_Time();
                 String end = formatter_date.format(curDate) + " " + formatter_Time.format(curDate);
                 IntervalTime intervaltime = new IntervalTime();
@@ -501,10 +689,20 @@ public class MainActivity extends AppCompatActivity {
                 double first_yuan_edit=Double.parseDouble(First_yuan_edit.getText().toString());
                 double first_min_edit=Double.parseDouble(First_min_edit.getText().toString());
                 double after_yuan_edit=Double.parseDouble(After_yuan_hour.getText().toString());
+                double n_free_price_edit=Double.parseDouble(N_FreePrice.getText().toString());
+                double n_first_hour_edit=Double.parseDouble(N_First_hour_edit.getText().toString());
+                double n_first_yuan_edit=Double.parseDouble(N_First_yuan_hour_edit.getText().toString());
+                double n_first_min_edit=Double.parseDouble(N_First_min_edit.getText().toString());
+                double n_after_yuan_edit=Double.parseDouble(N_After_yuan_hour_edit.getText().toString());
+
                 DecimalFormat df = new DecimalFormat("#0.00");
+                //Log.d("白天还是晚上",sreachbyidlist.get(0).getIs_day());
+                //白天收费
+                if(sreachbyidlist.get(0).getIs_day()==null||sreachbyidlist.get(0).getIs_day().equals("1")){
+                    dialog.setTitle("白天收费小票");
                 if(freeprice>=still_minutes){
-                    Log.d("freeprice====",freeprice+"");
-                    Log.d("still_minutes====",still_minutes+"");
+                    //Log.d("freeprice====",freeprice+"");
+                    //Log.d("still_minutes====",still_minutes+"");
                     pay = df.format(0.00);//计算消费金额
                     //pay = df.format((unitprice/60)*still_minutes);//计算消费金额
                     sreachbyidlist.get(0).getCar_Num();
@@ -533,6 +731,44 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+                }
+                //晚上收费
+                else{
+                    dialog.setTitle("夜间收费小票");
+                    if(n_free_price_edit>=still_minutes){
+                        //Log.d("freeprice====",freeprice+"");
+                        //Log.d("still_minutes====",still_minutes+"");
+                        pay = df.format(0.00);//计算消费金额
+                        //pay = df.format((unitprice/60)*still_minutes);//计算消费金额
+                        sreachbyidlist.get(0).getCar_Num();
+                        dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
+                                + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
+                                "\n\n免费分钟数为:"+freeprice+"分钟\n\n应收费用："+pay+"元");
+                        dialog.setCancelable(false);
+                    }else{
+                        //pay = df.format((unitprice)/60*(still_minutes-freeprice));//计算消费金额
+
+                        if((still_minutes-n_free_price_edit)<n_first_hour_edit*60){
+                            pay=df.format((still_minutes-n_free_price_edit)*n_first_yuan_edit/n_first_min_edit);
+                            sreachbyidlist.get(0).getCar_Num();
+                            dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
+                                    + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
+                                    "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
+                            dialog.setCancelable(false);
+                        }else{
+                            pay= df.format((n_first_yuan_edit/n_first_min_edit)*first_hour_edit*60+((still_minutes-n_free_price_edit)-n_first_hour_edit*60)*n_after_yuan_edit);
+                            sreachbyidlist.get(0).getCar_Num();
+                            dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
+                                    + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
+                                    "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
+                            dialog.setCancelable(false);
+
+                        }
+
+                    }
+
+                }
+
 
                 dialog.setPositiveButton("确定收费", new DialogInterface.OnClickListener() {
                     @Override
@@ -543,16 +779,17 @@ public class MainActivity extends AppCompatActivity {
                         today_trans.setEnd_Date(formatter_date.format(curDate));
                         today_trans.setEnd_Time(formatter_Time.format(curDate));
                         today_trans.setType_Cord("1");//1表示已结账
+                        today_trans.setIs_Steal("0");//非逃票
                         today_trans.setMoney(pay);
                         today_trans.update(get_id);
-                        Log.d("get_id=2=1=2=1",get_id+"");
+                       // Log.d("get_id=2=1=2=1",get_id+"");
                         sreachbyidlist.clear();
-                        fresh();
+                        selfresh("");
+                        Toast.makeText(MainActivity.this, "收费成功", Toast.LENGTH_SHORT).show();
                         save();//生成本地文件
                         //ftpUpload();//上传服务器
                         jsonlist = sreachbyid(get_id);
-                         httpJson(jsonlist.get(0),"getjson");//把最新数据传到后台
-
+                        httpJson(jsonlist.get(0),"getjson");//把最新数据传到后台
 
                     }
                 });
@@ -560,7 +797,28 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         list.clear();
-                        fresh();
+                        selfresh("");
+                    }
+                });
+                dialog.setNegativeButton("确认逃票", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        ToDay_Trans today_trans = new ToDay_Trans();
+                        Date curDate = new Date(System.currentTimeMillis());
+                        today_trans.setEnd_Date(formatter_date.format(curDate));
+                        today_trans.setEnd_Time(formatter_Time.format(curDate));
+                        today_trans.setType_Cord("0");//0表示已未结账
+                        today_trans.setIs_Steal("1");//逃票
+                        today_trans.setMoney(pay);
+                        today_trans.update(get_id);
+                        // Log.d("get_id=2=1=2=1",get_id+"");
+                        sreachbyidlist.clear();
+                        selfresh("");
+                        Toast.makeText(MainActivity.this, "逃票确认成功", Toast.LENGTH_SHORT).show();
+                        save();//生成本地文件
+                        //ftpUpload();//上传服务器
+                        jsonlist = sreachbyid(get_id);
+                        httpJson(jsonlist.get(0),"getjson");//把最新数据传到后台
                     }
                 });
 
@@ -578,7 +836,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v,
                                             ContextMenu.ContextMenuInfo menuInfo) {
-                menu.add(0, 1, 0, "删除");
+                menu.add(0, 1, 1, "删除");
             }
 
         });
@@ -586,51 +844,102 @@ public class MainActivity extends AppCompatActivity {
         //数据库获取收费单价
         //Config_Price.setText(intent.getStringExtra("confi_data"));
         //Config_Free_Price.setText(intent.getStringExtra("confi_free_price"));
-        list_ruleconfig = DataSupport.findAll(RuleConfig.class);
-                   for (RuleConfig rc : list_ruleconfig) {
-                       Config_Free_Price.setText(rc.getFreePrice()+"");
-                       First_hour_edit.setText(rc.getFirst_hour()+"");
-                       First_yuan_edit.setText(rc.getFirst_yuan_hour()+"");
-                       First_min_edit.setText(rc.getFirst_min()+"");
-                       After_yuan_hour.setText(rc.getAfter_yuan_hour()+"");
-                       After_hour.setText( First_hour_edit.getText().toString());
-                       After_hour_min.setText(First_min_edit.getText().toString());
 
-                   }
 
-                   ///光标焦点操作
-        First_hour_edit.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {
 
+
+//白天光标动态更新
+        First_hour_edit.addTextChangedListener(new TextWatcher() {
             @Override
-
-            public void onFocusChange(View v, boolean hasFocus) {
-
-                if (hasFocus) {
-                    // 获得焦点
-                } else {
-
-                    After_hour.setText( First_hour_edit.getText().toString());
-                }
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                // TODO Auto-generated method stub
+                //这个应该是在改变的时候会做的动作吧，具体还没用到过。
             }
-
-        });
-        ///光标焦点操作
-        First_min_edit.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {
-
             @Override
-
-            public void onFocusChange(View v, boolean hasFocus) {
-
-                if (hasFocus) {
-                    // 获得焦点
-                } else {
-                    //失去焦点
-                    After_hour_min.setText(First_min_edit.getText().toString());
-                }
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                          int arg3) {
+                // TODO Auto-generated method stub
+                //这是文本框改变之前会执行的动作
             }
-
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+                /*                *这是文本框改变之后 会执行的动作
+                 * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
+                 * 所以这里我们就需要加上数据的修改的动作了。*/
+                After_hour.setText( First_hour_edit.getText().toString());//动态更新时间
+            }
         });
 
+
+//白天光标动态更新
+        First_min_edit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                // TODO Auto-generated method stub
+                //这个应该是在改变的时候会做的动作吧，具体还没用到过。
+            }
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                          int arg3) {
+                // TODO Auto-generated method stub
+                //这是文本框改变之前会执行的动作
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+                /*                *这是文本框改变之后 会执行的动作
+                 * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
+                 * 所以这里我们就需要加上数据的修改的动作了。*/
+                After_hour_min.setText(First_min_edit.getText().toString());//动态更新分钟数
+            }
+        });
+
+//晚上光标动态更新
+        N_First_hour_edit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                // TODO Auto-generated method stub
+                //这个应该是在改变的时候会做的动作吧，具体还没用到过。
+            }
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                          int arg3) {
+                // TODO Auto-generated method stub
+                //这是文本框改变之前会执行的动作
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+                /*                *这是文本框改变之后 会执行的动作
+                 * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
+                 * 所以这里我们就需要加上数据的修改的动作了。*/
+                N_After_hour.setText( N_First_hour_edit.getText().toString());//动态更新时间
+            }
+        });
+
+//晚上光标动态更新
+        N_First_min_edit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                // TODO Auto-generated method stub
+                //这个应该是在改变的时候会做的动作吧，具体还没用到过。
+            }
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+                                          int arg3) {
+                // TODO Auto-generated method stub
+                //这是文本框改变之前会执行的动作
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+                /*                *这是文本框改变之后 会执行的动作
+                 * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
+                 * 所以这里我们就需要加上数据的修改的动作了。*/
+                N_After_hour_min.setText(N_First_min_edit.getText().toString());//动态更新分钟数
+            }
+        });
 
         Set_Button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -642,12 +951,21 @@ public class MainActivity extends AppCompatActivity {
                 String first_yuan_edit=First_yuan_edit.getText().toString();
                 String first_min_edit=First_min_edit.getText().toString();
                 String after_yuan_hour=After_yuan_hour.getText().toString();
+                String n_free_price_edit=N_FreePrice.getText().toString();
+                String n_first_hour_edit=N_First_hour_edit.getText().toString();
+                String n_first_yuan_edit=N_First_yuan_hour_edit.getText().toString();
+                String n_first_min_edit=N_First_min_edit.getText().toString();
+                String n_after_yuan_edit=N_After_yuan_hour_edit.getText().toString();
+                String day_start_date_fee=Day_start_time.getText().toString();
+                String day_end_date_fee=Day_end_time.getText().toString();
+
 
 
                 //Log.d("config_str",config_str+"======");
                 if(config_free_Price==null || config_free_Price.equals("")||first_hour_edit==null || first_hour_edit.equals("")||
                 first_yuan_edit==null || first_yuan_edit.equals("")||first_min_edit==null || first_min_edit.equals("") ||after_yuan_hour==null
-                        ||after_yuan_hour.equals("")){
+                        ||after_yuan_hour.equals("")||n_free_price_edit==null||n_free_price_edit.equals("")||n_first_hour_edit==null||n_first_hour_edit.equals("")
+                        ||n_first_yuan_edit==null||n_first_yuan_edit.equals("")||n_first_min_edit==null||n_first_min_edit.equals("")||n_after_yuan_edit==null||n_after_yuan_edit.equals("")){
                     Toast.makeText(MainActivity.this, "请输入数值", Toast.LENGTH_SHORT).show();
                 }else {
                     ruleconfig.setFreePrice(Double.parseDouble(config_free_Price));
@@ -655,17 +973,109 @@ public class MainActivity extends AppCompatActivity {
                     ruleconfig.setFirst_yuan_hour(Double.parseDouble(first_yuan_edit));
                     ruleconfig.setFirst_min(Double.parseDouble(first_min_edit));
                     ruleconfig.setAfter_yuan_hour(Double.parseDouble(after_yuan_hour));
-
+                    ruleconfig.setN_FreePrice(Double.parseDouble(n_free_price_edit));
+                    ruleconfig.setN_First_yuan_hour(Double.parseDouble(n_first_hour_edit));
+                    ruleconfig.setN_First_hour(Double.parseDouble(n_first_yuan_edit));
+                    ruleconfig.setN_First_min(Double.parseDouble(n_first_min_edit));
+                    ruleconfig.setN_After_yuan_hour(Double.parseDouble(n_after_yuan_edit));
+                    ruleconfig.setDay_start_time(day_start_date_fee);
+                    ruleconfig.setDay_end_time(day_end_date_fee);
 
                 }
+
+                B_isset_Right_time B_isset_Right_time =new B_isset_Right_time();
+                try {
+                    Boolean is_right_set = B_isset_Right_time.is_right_set(day_start_date_fee,day_end_date_fee);
+                    if(is_right_set){
+                        ruleconfig.updateAll();
+                        Intent Main_intent = new Intent(MainActivity.this, MainActivity.class);
+                        startActivity(Main_intent);
+                        //fresh();
+                        Day_start_time.setTextColor(Color.BLACK);
+                        Day_end_time.setTextColor(Color.BLACK);
+                        Toast.makeText(MainActivity.this, "修改成功跳转主页", Toast.LENGTH_SHORT).show();
+                    }else{
+
+                        Toast.makeText(MainActivity.this, "开始时间必须小于结束时间，修改失败", Toast.LENGTH_LONG).show();
+                        Day_start_time.setTextColor(Color.RED);
+                        Day_end_time.setTextColor(Color.RED);
+
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
                 ruleconfig.updateAll();//跟新新数据库
                // b_config_all=true;//修改设置页面
                 //Intent Main_intent = new Intent(MainActivity.this, MainActivity.class);
                 //把设置好的参数带到主页
                // Main_intent.putExtra("confi_data", ruleconfig.getUnitPrice() + "");
                 //Main_intent.putExtra("confi_free_price", ruleconfig.getFreePrice() + "");
-                //startActivity(Main_intent);//跳到主页
-                Toast.makeText(MainActivity.this, "修改成功返回主页", Toast.LENGTH_SHORT).show();
+               // startActivity(Main_intent);//跳到主页
+            }
+        });
+
+
+//搜索页配置
+        //搜索开始时间
+        Search_start_date.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
+                        // TODO Auto-generated method stub
+                        /*      Your code   to get date and time    */
+                        selectedmonth = selectedmonth + 1;
+                        Search_start_date.setText(String.format("%04d", selectedyear)+"-"+String.format("%02d", selectedmonth)+"-"+ String.format("%02d", selectedday)+"" );
+                    }
+                }, Year,Month, Day).show();
+            }
+        });
+
+        //搜索结束时间
+        Search_end_date.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
+                        // TODO Auto-generated method stub
+                        /*      Your code   to get date and time    */
+                        selectedmonth = selectedmonth + 1;
+                        Search_end_date.setText(String.format("%04d", selectedyear)+"-"+String.format("%02d", selectedmonth)+"-"+ String.format("%02d", selectedday) +"" );
+                    }
+                }, Year,Month, Day).show();
+            }
+        });
+
+        //是否逃票查询
+        Search_Steal.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radbtn = (RadioButton) findViewById(checkedId);
+                String sc =radbtn.getText()+"";
+                Log.d("sc===",sc);
+                if(sc.equals("是")){
+                    Steal_Searched="1";
+                }
+                if(sc.equals("否")){
+                    Steal_Searched="0";
+                }
+                if(sc.equals("所有")){
+                    Steal_Searched="";
+                }
+            }
+        });
+
+        Get_Search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //List_Steal.clear();
+                try {
+                    if(Steal_Searched==null){
+                        Steal_Searched="";
+                    }
+                    Sel_Steal(Search_start_date.getText()+"",Search_end_date.getText()+"",Steal_Searched);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -684,14 +1094,44 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     delfresh(today.getId());
                     list.clear();
-                    fresh();
-                    Toast.makeText(MainActivity.this, "删除", Toast.LENGTH_LONG).show();
+                    selfresh("");
+                    Toast.makeText(MainActivity.this, "删除成功", Toast.LENGTH_LONG).show();
                     break;
+//                case 2:
+//                    ContentValues values = new ContentValues();
+//                    values.put("Is_Steal", "1");//表示逃票
+//                    DataSupport.update(ToDay_Trans.class, values, today.getId());
+//                    list.clear();
+//                    selfresh("");
+//                    Toast.makeText(MainActivity.this, "逃票设置成功", Toast.LENGTH_LONG).show();
+//                    break;
             }
         } catch (Exception e) {
         }
         return super.onContextItemSelected(menu);
 
+    }
+
+    public void getConfigSet(){
+        list_ruleconfig = DataSupport.findAll(RuleConfig.class);
+        for (RuleConfig rc : list_ruleconfig) {
+            Config_Free_Price.setText(rc.getFreePrice()+"");
+            First_hour_edit.setText(rc.getFirst_hour()+"");
+            First_yuan_edit.setText(rc.getFirst_yuan_hour()+"");
+            First_min_edit.setText(rc.getFirst_min()+"");
+            After_yuan_hour.setText(rc.getAfter_yuan_hour()+"");
+            After_hour.setText( First_hour_edit.getText().toString());
+            After_hour_min.setText(First_min_edit.getText().toString());
+            N_FreePrice.setText(rc.getN_FreePrice()+"");
+            N_First_hour_edit.setText(rc.getN_First_hour()+"");
+            N_First_yuan_hour_edit.setText(rc.getN_First_yuan_hour()+"");
+            N_First_min_edit.setText(rc.getN_First_min()+"");
+            N_After_yuan_hour_edit.setText(rc.getN_After_yuan_hour()+"");
+            N_After_hour.setText(N_First_hour_edit.getText().toString());
+            N_After_hour_min.setText(N_First_min_edit.getText().toString());
+            Day_start_time.setText(rc.getDay_start_time());
+            Day_end_time.setText(rc.getDay_end_time());
+        }
     }
 
 

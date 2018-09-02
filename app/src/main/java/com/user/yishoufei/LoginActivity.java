@@ -38,7 +38,9 @@ import org.litepal.crud.DataSupport;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import okhttp3.Call;
@@ -56,6 +58,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     private ImageView bingPicImg;
     private List<Random_Num> list_random_num;
     private List<RuleConfig> list_ruleconfig;
+    private List<date_verify> list_date_verify;
     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
     Date curDate = new Date(System.currentTimeMillis());//获取当前时间
 
@@ -418,14 +421,14 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                     username.setPassword(mPassword);
                     username.save();
                     return true;
-                } else if (invite_num.equals("888")&&getPass(mUsername).size()!=0){
+                } else if (invite_num.equals("8888")&&getPass(mUsername).size()!=0){
                     //邀请码如果为888允许修改密码，用户存在，密码错误，则需改密码
                     UserName username = new UserName();
                     username.setUsername(mUsername);
                     username.setPassword(mPassword);
                     username.update(list_username.get(0).getId());
                     return true;
-                }else if(mUsername.equals("123456")&&mPassword.equals("123456")){
+                }else if(mUsername.equals("1234561")&&mPassword.equals("1234561")){
                     UserName username = new UserName();
                     username.setUsername(mUsername);
                     username.setPassword(mPassword);
@@ -440,11 +443,40 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Boolean success)  {
             mAuthTask = null;
             showProgress(false);
+            list_date_verify = DataSupport.findAll(date_verify.class);
+            date_verify dv = new date_verify();
+            SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
+            Calendar c = Calendar.getInstance();
+            if(list_date_verify.size()!=0){
+                String vd=list_date_verify.get(0).getVerify_date();
+                String now   = sf.format(new java.util.Date());
 
+                try {
+                    java.util.Date vd_date =sf.parse(vd);
+                    java.util.Date now_date = sf.parse(now);
+                    if(vd_date.before(now_date)){//过期
+                        Toast.makeText(LoginActivity.this, "即将过期请联系管理员", Toast.LENGTH_SHORT).show();
+                        DataSupport.deleteAll(Random_Num.class);
+                        DataSupport.deleteAll(UserName.class);
+                        Intent Main_intent = new Intent(LoginActivity.this, LoginActivity.class);
+                        startActivity(Main_intent);
+
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
             if (success) {
+                //第一次登陆成功设置到期日期，默认为一个月
+                if (null == list_date_verify || list_date_verify.size() == 0) {
+                    String rn = dv.getexpire();
+                    dv.setVerify_date(rn);
+                    dv.save();
+                }
                 //判断是否设置收费单价
                 ruleconfig = new RuleConfig();
                 list_ruleconfig = DataSupport.findAll(RuleConfig.class);
@@ -453,11 +485,20 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                 if (null == list_ruleconfig || list_ruleconfig.size() == 0) {
                     DecimalFormat df = new DecimalFormat("#0.00");//保留2位小数
 //                    Double dou = Double.parseDouble(first_hour_edit.getText().toString());
+                    //初始化默认配置白天07:00至19:00,免费分钟数0元首1小时收费1.5元每15分钟，1小时后2.25元每15分钟
+                    //除了白天的时间其余的都是晚上时间，默认晚上免费分钟数0元首1小时每60分钟1元，1小时后每60分钟1元
                        ruleconfig.setFirst_hour(1);
-                       ruleconfig.setAfter_yuan_hour(1.5);
-                       ruleconfig.setFirst_min(1.5);
+                       ruleconfig.setFirst_yuan_hour(1.5);
+                       ruleconfig.setFirst_min(15);
                        ruleconfig.setAfter_yuan_hour(2.25);
                        ruleconfig.setFreePrice(0.0);
+                       ruleconfig.setDay_start_time("07:00");
+                       ruleconfig.setDay_end_time("19:00");
+                       ruleconfig.setN_FreePrice(0.0);
+                       ruleconfig.setN_First_hour(1);
+                       ruleconfig.setN_First_min(60);
+                       ruleconfig.setN_First_yuan_hour(1);
+                       ruleconfig.setN_After_yuan_hour(1);
                        ruleconfig.save();//更新配置表
                     startActivity(Main_intent);//跳到主页
 

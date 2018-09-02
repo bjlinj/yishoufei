@@ -2,6 +2,10 @@ package com.user.yishoufei;
 
 import org.litepal.crud.DataSupport;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+
 /**
  * Created by User on 2017/6/19.
  */
@@ -9,6 +13,8 @@ import org.litepal.crud.DataSupport;
 public class Random_Num extends DataSupport {
 
     private String strRand="";
+
+
 
     public String getRandom_Num(){
         //产生3位的随机数
@@ -26,4 +32,8 @@ public class Random_Num extends DataSupport {
     public void setStrRand(String strRand) {
         this.strRand = strRand;
     }
+
+
 }
+
+

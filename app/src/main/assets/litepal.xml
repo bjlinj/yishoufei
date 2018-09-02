@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <litepal>
     <dbname value="ToDay_Trans"></dbname>
-    <version value="3"></version>
+    <version value="4"></version>
     <list>
         <mapping class="com.user.yishoufei.ToDay_Trans" ></mapping>
         <mapping class="com.user.yishoufei.RuleConfig" ></mapping>
         <mapping class="com.user.yishoufei.Random_Num" ></mapping>
         <mapping class="com.user.yishoufei.UserName"></mapping>
+        <mapping class="com.user.yishoufei.date_verify"></mapping>
     </list>
 </litepal>

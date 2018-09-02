@@ -17,8 +17,71 @@ public class RuleConfig  extends DataSupport implements Serializable {
     private double  After_yuan_hour;//X小时后X元/分钟
    // private double  UnitPrice;//暂时设置一小时2元
     private double FreePrice;//设置免费分钟数
+    private String Day_start_time; //设置白天开始时间
+    private String Day_end_time;//设置白天结束时间
+
+    private double  N_First_hour;//晚上首X小时收费默认为1
+    private double  N_First_yuan_hour;//晚上首1小时收费1.5元/X分钟
+    private double  N_First_min;//晚上首X小时收费1.5元/15分钟
+    private double  N_After_yuan_hour;//晚上X小时后X元/分钟
+    private double N_FreePrice;//晚上设置免费分钟数
 
 
+    public String getDay_start_time() {
+        return Day_start_time;
+    }
+
+    public void setDay_start_time(String day_start_time) {
+        Day_start_time = day_start_time;
+    }
+
+    public String getDay_end_time() {
+        return Day_end_time;
+    }
+
+    public void setDay_end_time(String day_end_time) {
+        Day_end_time = day_end_time;
+    }
+
+    public double getN_First_hour() {
+        return N_First_hour;
+    }
+
+    public void setN_First_hour(double n_First_hour) {
+        N_First_hour = n_First_hour;
+    }
+
+    public double getN_First_yuan_hour() {
+        return N_First_yuan_hour;
+    }
+
+    public void setN_First_yuan_hour(double n_First_yuan_hour) {
+        N_First_yuan_hour = n_First_yuan_hour;
+    }
+
+    public double getN_First_min() {
+        return N_First_min;
+    }
+
+    public void setN_First_min(double n_First_min) {
+        N_First_min = n_First_min;
+    }
+
+    public double getN_After_yuan_hour() {
+        return N_After_yuan_hour;
+    }
+
+    public void setN_After_yuan_hour(double n_After_yuan_hour) {
+        N_After_yuan_hour = n_After_yuan_hour;
+    }
+
+    public double getN_FreePrice() {
+        return N_FreePrice;
+    }
+
+    public void setN_FreePrice(double n_FreePrice) {
+        N_FreePrice = n_FreePrice;
+    }
 
     public double getFirst_hour() {
         return First_hour;

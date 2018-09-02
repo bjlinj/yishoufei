@@ -1,6 +1,5 @@
 package com.user.yishoufei;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,27 +8,23 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Collections;
-import java.util.Comparator;
 
-/**
- * Created by User on 2017/6/11.
- */
 
-public class TableAdapter extends BaseAdapter {
+public class SearchAdapter extends BaseAdapter {
 
     private List<ToDay_Trans> list;
     private LayoutInflater inflater;
     SimpleDateFormat formatter_date = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat formatter_Time = new SimpleDateFormat("HH:mm:ss");
-    public TableAdapter(MainActivity context, List<ToDay_Trans> list){
+    public SearchAdapter(MainActivity context, List<ToDay_Trans> list){
         this.list = new ArrayList(list);
 //        Collections.sort(list,new SortComparator());
-       for(ToDay_Trans attribute : list) {
-           System.out.println(attribute.getCar_Num()+"=="+new SortComparator());
-      }
+        for(ToDay_Trans attribute : list) {
+            System.out.println(attribute.getCar_Num()+"=="+new SortComparator());
+        }
 
         inflater = LayoutInflater.from(context);
     }
@@ -59,18 +54,18 @@ public class TableAdapter extends BaseAdapter {
         ToDay_Trans today = (ToDay_Trans) this.getItem(position);
         //Collections.sort(list,new SortComparator());//排序处理
         ViewHolder viewHolder;
+        String st;
 
         if(convertView == null){
 
             viewHolder = new ViewHolder();
 
-            convertView = inflater.inflate(R.layout.list_item, null);
+            convertView = inflater.inflate(R.layout.search_list, null);
             viewHolder.Id = (TextView) convertView.findViewById(R.id.id);
             viewHolder.TodayCar_Num = (TextView) convertView.findViewById(R.id.car_num);
             viewHolder.TodayStart_Time = (TextView) convertView.findViewById(R.id.start_time);
             viewHolder.Still_Time = (TextView) convertView.findViewById(R.id.still_time);
-
-
+            viewHolder.IS_Steal=(TextView) convertView.findViewById(R.id.is_Steal);
             convertView.setTag(viewHolder);
         }else{
             viewHolder = (ViewHolder) convertView.getTag();
@@ -81,12 +76,18 @@ public class TableAdapter extends BaseAdapter {
         viewHolder.TodayStart_Time.setTextSize(16);
         Date curDate = new Date(System.currentTimeMillis());
         String start =today.getStart_Date()+" "+today.getStart_Time();
-        String end = formatter_date.format(curDate)+" "+formatter_Time.format(curDate);
+        String end = today.getEnd_Date()+" "+today.getEnd_Time();
         IntervalTime intervaltime = new IntervalTime();
         String interval = intervaltime.get_IntervalTime(start, end);
         viewHolder.Still_Time.setText(interval);
         viewHolder.Still_Time.setTextSize(16);
-
+        if(today.getIs_Steal().equals("1")){
+             st="是";
+        }else{
+             st="否";
+        }
+        viewHolder.IS_Steal.setText(st);
+        viewHolder.IS_Steal.setTextSize(16);
         //viewHolder.goodMoney.setText(goods.getMoney()+"");
         //viewHolder.goodMoney.setTextSize(13);
 
@@ -99,6 +100,7 @@ public class TableAdapter extends BaseAdapter {
         public TextView TodayStart_Time;
         public TextView Still_Time;
         public TextView TodayMoney;
+        public TextView IS_Steal;
     }
 
 
