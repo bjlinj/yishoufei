@@ -36,7 +36,7 @@ import com.bumptech.glide.Glide;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
-import java.sql.Date;
+import java.util.Date;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -97,6 +97,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
     private List<UserName> list_username;
     private String invite_num;
     private EditText first_hour_edit;
+    private String Buy_day;//1表示月购买，2表示年购买
 
 
     //http://blog.csdn.net/jasonkent27/article/details/40590891 代码解析
@@ -175,7 +176,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
 }
 
 
-    // 判断邀请码是否正确 判断标准为3为验证码(第一位+第三位)*第二位
+    // 判断邀请码是否正确 判断标准为3为验证码(第一位+第三位)*第二位*第二位
     private boolean IsInvite() {
         invite_num=invite.getText().toString();
         if (invite.getText().toString() == null || invite.getText().toString().equals("")) {
@@ -185,11 +186,28 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
             int Int1 = Integer.parseInt(random_num_view.getText().toString().substring(0, 1));
             int Int2 = Integer.parseInt(random_num_view.getText().toString().substring(1, 2));
             int Int3 = Integer.parseInt(random_num_view.getText().toString().substring(2, 3));
-            int result = (Int1 + Int3) * Int2;
+            int result_month = (Int1 + Int3) * Int2* Int2;//30天(第一位+第三位)*第二位*第二位
+            int result_year = (Int1 + Int3+Int2) * Int2* Int2+1;//一年  (第一位+第三位+第二位)*第二位*第二位+1
             int invite_num = Integer.parseInt(invite.getText().toString());
-            if (result == invite_num) {
+            if (result_month == invite_num) {
+                Buy_day="1";//购买月
+                //购买成功重新生成验证码
+                DataSupport.deleteAll(Random_Num.class);
+                Random_Num random_num = new Random_Num();
+                String rn = random_num.getRandom_Num();
+                random_num.setStrRand(rn);
+                random_num.save();
                 return true;
-            } else {
+            } if (result_year == invite_num) {
+                Buy_day="2";//购买年
+                //购买成功重新生成验证码
+                DataSupport.deleteAll(Random_Num.class);
+                Random_Num random_num = new Random_Num();
+                String rn = random_num.getRandom_Num();
+                random_num.setStrRand(rn);
+                random_num.save();
+                return true;
+            }else {
                 return false;
             }
         }
@@ -446,36 +464,91 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
         protected void onPostExecute(final Boolean success)  {
             mAuthTask = null;
             showProgress(false);
+            Boolean iscuss=success;
             list_date_verify = DataSupport.findAll(date_verify.class);
             date_verify dv = new date_verify();
             SimpleDateFormat sf = new SimpleDateFormat("yyyyMMdd");
             Calendar c = Calendar.getInstance();
             if(list_date_verify.size()!=0){
+
                 String vd=list_date_verify.get(0).getVerify_date();
                 String now   = sf.format(new java.util.Date());
+                try {
+                    Date  date = sf.parse(vd);
+
+                if(IsInvite()){
+                    if(Buy_day.equals("1")){//又购买了一个月
+                        DataSupport.deleteAll(date_verify.class);
+                        Calendar rightNow = Calendar.getInstance();
+                        rightNow.setTime(date);
+                        rightNow.add(Calendar.DAY_OF_YEAR,30);
+                        Date dt1=rightNow.getTime();
+                        String reStr = sf.format(dt1);
+                        dv.setVerify_date( reStr);
+                        //Log.d("months",reStr+"===="+date);
+                        dv.save();
+                        //differentDays dd = new differentDays();
+                        Toast.makeText(LoginActivity.this, "欢迎购买，您可增加使用30天", Toast.LENGTH_SHORT).show();
+                    }if(Buy_day.equals("2")){//购买一年
+                        DataSupport.deleteAll(date_verify.class);
+                        Calendar rightNow = Calendar.getInstance();
+                        rightNow.setTime(date);
+                        rightNow.add(Calendar.DAY_OF_YEAR,365);
+                        Date dt1=rightNow.getTime();
+                        String reStr = sf.format(dt1);
+                        dv.setVerify_date( reStr);
+                        dv.save();
+                        //differentDays dd = new differentDays();
+                        Toast.makeText(LoginActivity.this, "欢迎购买，您可增加使用365天", Toast.LENGTH_SHORT).show();
+                    }
+
+                }else{
 
                 try {
                     java.util.Date vd_date =sf.parse(vd);
                     java.util.Date now_date = sf.parse(now);
                     if(vd_date.before(now_date)){//过期
-                        Toast.makeText(LoginActivity.this, "即将过期请联系管理员", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "邀请码已过期请联系管理员购买", Toast.LENGTH_SHORT).show();
                         DataSupport.deleteAll(Random_Num.class);
                         DataSupport.deleteAll(UserName.class);
-                        Intent Main_intent = new Intent(LoginActivity.this, LoginActivity.class);
-                        startActivity(Main_intent);
-
+                        DataSupport.deleteAll(date_verify.class);
+                        //生成新的验证码
+                        Random_Num random_num = new Random_Num();
+                        String rn = random_num.getRandom_Num();
+                        random_num.setStrRand(rn);
+                        random_num.save();
+                        random_num_view.setText(random_num.getStrRand());
+                        iscuss=false;
+                    }else{
+                        differentDays dd = new differentDays();
+                        Toast.makeText(LoginActivity.this, "距离到期还有"+dd.getdifferentDays(now_date,vd_date)+"天", Toast.LENGTH_SHORT).show();
                     }
 
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
-            if (success) {
-                //第一次登陆成功设置到期日期，默认为一个月
+            if (iscuss) {
+                //第一次登陆成功设置到期日期，
                 if (null == list_date_verify || list_date_verify.size() == 0) {
-                    String rn = dv.getexpire();
-                    dv.setVerify_date(rn);
-                    dv.save();
+                     IsInvite();//到期后重新获取验证码
+                    if(Buy_day.equals("1")){//购买一个月
+                        String rn = dv.getexpire_month();
+                        Log.d("到期时间",rn);
+                        dv.setVerify_date(rn);
+                        dv.save();
+                        Toast.makeText(LoginActivity.this, "欢迎购买，您一共可以使用30天", Toast.LENGTH_SHORT).show();
+                    }if(Buy_day.equals("2")){//购买一年
+                        String rn = dv.getexpire_year();
+                        dv.setVerify_date(rn);
+                        dv.save();
+                        Toast.makeText(LoginActivity.this, "欢迎购买，您一共可以使用365天", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 //判断是否设置收费单价
                 ruleconfig = new RuleConfig();

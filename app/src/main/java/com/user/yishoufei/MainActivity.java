@@ -585,6 +585,7 @@ public class MainActivity extends AppCompatActivity {
                                     //UPDATE 数据库
                                     ToDay_Trans today_trans = new ToDay_Trans();
                                     today_trans.setIs_Steal("0");//非逃票
+                                    today_trans.setType_Cord("1");//已经结清
                                     today_trans.update(List_Steal_card.get(0).getId());
                                     // Log.d("get_id=2=1=2=1",get_id+"");
                                     Toast.makeText(MainActivity.this, "补缴成功", Toast.LENGTH_SHORT).show();
@@ -715,14 +716,22 @@ public class MainActivity extends AppCompatActivity {
 
                     if((still_minutes-freeprice)<first_hour_edit*60){
                         pay=df.format((still_minutes-freeprice)*first_yuan_edit/first_min_edit);
+                        //pay=df.format(Math.ceil((still_minutes-freeprice)/first_min_edit)*first_yuan_edit);
                         sreachbyidlist.get(0).getCar_Num();
                         dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                                 + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
                                 "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
                         dialog.setCancelable(false);
                     }else{
-                       pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+((still_minutes-freeprice)-first_hour_edit*60)*after_yuan_edit);
-                        sreachbyidlist.get(0).getCar_Num();
+                       pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+((still_minutes-freeprice)-first_hour_edit*60)*after_yuan_edit/first_min_edit);
+//                        Log.d("1===first_yuan_edit:",first_yuan_edit+"");
+//                        Log.d("1===first_min_edit:",first_min_edit+"");
+//                        Log.d("1===first_hour_edit:",first_hour_edit+"");
+//                        Log.d("1===still_minutes:",still_minutes+"");
+//                        Log.d("1===freeprice:",freeprice+"");
+//                        Log.d("1===first_hour_edit:",first_hour_edit+"");
+//                        Log.d("1===after_yuan_edit:",after_yuan_edit+"");
+                       sreachbyidlist.get(0).getCar_Num();
                         dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                                 + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
                                 "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
@@ -756,11 +765,18 @@ public class MainActivity extends AppCompatActivity {
                                     "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
                             dialog.setCancelable(false);
                         }else{
-                            pay= df.format((n_first_yuan_edit/n_first_min_edit)*first_hour_edit*60+((still_minutes-n_free_price_edit)-n_first_hour_edit*60)*n_after_yuan_edit);
+                            pay= df.format((n_first_yuan_edit/n_first_min_edit)*n_first_hour_edit*60+((still_minutes-n_free_price_edit)-n_first_hour_edit*60)*n_after_yuan_edit/n_first_min_edit);
+                            Log.d("===n_first_yuan_edit:",n_first_yuan_edit+"");
+                            Log.d("===n_first_min_edit:",n_first_min_edit+"");
+                            Log.d("===first_hour_edit:",n_first_hour_edit+"");
+                            Log.d("===still_minutes:",still_minutes+"");
+                            Log.d("===n_free_price_edit:",n_free_price_edit+"");
+                            Log.d("===n_first_hour_edit:",n_first_hour_edit+"");
+                            Log.d("===n_after_yuan_edit:",n_after_yuan_edit+"");
                             sreachbyidlist.get(0).getCar_Num();
                             dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                                     + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
-                                    "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
+                                    "\n\n免费分钟数为: "+n_free_price_edit+"分钟\n\n应收费用："+pay+"元");
                             dialog.setCancelable(false);
 
                         }

@@ -51,7 +51,7 @@
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="如需邀请码请联系:微信 837372164 免费提供"
+                    android:text="如需邀请码请联系:微信 837372164 免费试用"
                     android:textSize="15sp"
                     android:textColor="#000000"
                     />
