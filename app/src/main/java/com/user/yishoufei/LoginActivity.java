@@ -508,7 +508,7 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                     java.util.Date vd_date =sf.parse(vd);
                     java.util.Date now_date = sf.parse(now);
                     if(vd_date.before(now_date)){//过期
-                        Toast.makeText(LoginActivity.this, "邀请码已过期请联系管理员购买", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "邀请码已过期请联系管理员", Toast.LENGTH_SHORT).show();
                         DataSupport.deleteAll(Random_Num.class);
                         DataSupport.deleteAll(UserName.class);
                         DataSupport.deleteAll(date_verify.class);
