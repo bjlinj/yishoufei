@@ -1,25 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:paddingBottom="20dp"
-        android:paddingLeft="16dp"
-        android:text="请输入相关设置保存"
-        android:textSize="30sp" />
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
-        android:paddingTop="20dp">
+        android:paddingTop="10dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -207,7 +201,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
-        android:paddingTop="20dp">
+        android:paddingTop="10dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -372,7 +366,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:paddingRight="16dp"
-        android:paddingTop="50dp">
+        android:paddingTop="10dp">
 
         <Button
             android:id="@+id/set_price"
@@ -382,14 +376,18 @@
     </LinearLayout>
 
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
 
-
-
-
-    <TimePicker
-        android:id="@+id/tpPicker"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        ></TimePicker>
+<TimePicker
+android:id="@+id/tpPicker"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:visibility="invisible"
+    ></TimePicker>
+    </LinearLayout>
 </LinearLayout>
+    </ScrollView>
+

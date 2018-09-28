@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -26,6 +27,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -45,6 +47,10 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.qq.e.ads.banner.ADSize;
+import com.qq.e.ads.banner.AbstractBannerADListener;
+import com.qq.e.ads.banner.BannerView;
+import com.qq.e.comm.util.AdError;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -146,6 +152,13 @@ public class MainActivity extends AppCompatActivity {
 
     private String   model= android.os.Build.MODEL;//获取手机型号
     private String carrier= android.os.Build.MANUFACTURER;//获取手机品牌
+
+    //插屏廣告
+    private ViewGroup bannerContainer;
+    private BannerView bv;
+    private String posId;
+
+
 //    private Switch sw_price_tex;//每小时X元默认开启
 //    private Switch sw_limit_tex;//每天上限金额默认关闭
 //    private Switch sw_free_price_tex;//免费分钟数默认关闭
@@ -306,6 +319,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         LitePal.getDatabase();
+//插屏广告----
+        bannerContainer = (ViewGroup) this.findViewById(R.id.bannerContainer);
+        this.getBanner().loadAD();
+//插屏广告----
+
 
         final ActionBar actionBar = getSupportActionBar();//隐藏默认的控件
         if (actionBar != null) {
@@ -425,6 +443,8 @@ public class MainActivity extends AppCompatActivity {
         }
         Spinner_Alphabet_city.setOnItemSelectedListener(new SpinnerAlphabetXMLSelectedListener());//字母监听
         Spinner_City.setOnItemSelectedListener(new SpinnerXMLSelectedListener());//简写选择监听
+
+
 //
 //        //是否开启单位每小时
 //        sw_price_tex.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -1031,7 +1051,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
 //搜索页配置
         //搜索开始时间
         Search_start_date.setOnClickListener(new View.OnClickListener(){
@@ -1229,5 +1248,49 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }.start();
+    }
+
+//插屏广告
+    private BannerView getBanner() {
+        String posId = getPosID();
+        if( this.bv != null && this.posId.equals(posId)) {
+            return this.bv;
+        }
+        if(this.bv != null){
+            bannerContainer.removeView(bv);
+            bv.destroy();
+        }
+        this.posId = posId;
+        this.bv = new BannerView(this, ADSize.BANNER, Constants.APPID,posId);
+        // 注意：如果开发者的banner不是始终展示在屏幕中的话，请关闭自动刷新，否则将导致曝光率过低。
+        // 并且应该自行处理：当banner广告区域出现在屏幕后，再手动loadAD。
+        bv.setRefresh(10);
+
+        bv.setADListener(new AbstractBannerADListener() {
+
+            @Override
+            public void onNoAD(AdError error) {
+                Log.i(
+                        "AD_DEMO",
+                        String.format("Banner onNoAD，eCode = %d, eMsg = %s", error.getErrorCode(),
+                                error.getErrorMsg()));
+            }
+
+            @Override
+            public void onADReceiv() {
+                Log.i("AD_DEMO", "ONBannerReceive");
+            }
+            public void onADCloseOverlay(){
+                Log.i("onADCloseOverlay", "onADCloseOverlay");
+            }
+        });
+        bannerContainer.addView(bv);
+
+        return this.bv;
+    }
+
+
+    private String getPosID() {
+        return Constants.BannerPosID ;
     }
 }
