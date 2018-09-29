@@ -41,8 +41,8 @@
             </intent-filter>
         </activity>
         <!-- android:windowSoftInputMode="adjustPan|stateHidden" 这个属性让键盘不会把布局推上去 -->
-        <activity android:name=".LoginActivity"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
+        <!--<activity android:name=".LoginActivity"-->
+            <!--android:windowSoftInputMode="adjustPan|stateHidden"/>-->
         <activity android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan|stateHidden"/>
         <activity android:name=".ConfigActivity"

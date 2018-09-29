@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView Car_Num;
     private TextView Start_Time;
     private View config;
+    private View about_ous;
     private EditText Config_Free_Price;
     private EditText First_hour_edit;
     private EditText First_yuan_edit;
@@ -207,9 +208,9 @@ public class MainActivity extends AppCompatActivity {
 
     //取出用户ID
     public String getuserID(){
-        userlist = DataSupport.findAll(UserName.class);
+        //userlist = DataSupport.findAll(UserName.class);
         //Log.d("userlist=0=0=0=",userlist.get(0).getUsername());
-          return   (userlist.get(0).getUsername()+userlist.get(0).getPassword()+model+carrier).replace(" ", "");
+          return   (model+carrier).replace(" ", "");
     }
 
     //SQL查询方式
@@ -279,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
                     homeview.setVisibility(View.VISIBLE);
                     search_view.setVisibility(View.GONE);
                     config.setVisibility(View.GONE);
+                    about_ous.setVisibility(View.GONE);
                     return true;
 /*                case R.id.navigation_dashboard:
                     homeview.setVisibility(View.GONE);
@@ -291,6 +293,7 @@ public class MainActivity extends AppCompatActivity {
                 //查询页
                 case R.id.navigation_dashboard:
                     homeview.setVisibility(View.GONE);
+                    about_ous.setVisibility(View.GONE);
                     search_view.setVisibility(View.VISIBLE);
                     if(Search_start_date.getText().toString()==null||Search_start_date.getText().toString().equals("")){
                         Search_start_date.setText(formatter_date.format(new Date()));
@@ -301,11 +304,20 @@ public class MainActivity extends AppCompatActivity {
                     config.setVisibility(View.GONE);
                     return true;
                 //设置页
+                case R.id.navigation_settings:
+                    // mTextMessage.setText(R.string.title_notifications);
+                    homeview.setVisibility(View.GONE);
+                    search_view.setVisibility(View.GONE);
+                    about_ous.setVisibility(View.GONE);
+                    config.setVisibility(View.VISIBLE);
+                    getConfigSet();//加载参数
+                    return true;
                 case R.id.navigation_notifications:
                     // mTextMessage.setText(R.string.title_notifications);
                     homeview.setVisibility(View.GONE);
                     search_view.setVisibility(View.GONE);
-                    config.setVisibility(View.VISIBLE);
+                    config.setVisibility(View.GONE);
+                    about_ous.setVisibility(View.VISIBLE);
                     getConfigSet();//加载参数
                     return true;
             }
@@ -338,6 +350,7 @@ public class MainActivity extends AppCompatActivity {
         search_view = findViewById(R.id.include_search);//加载搜索页
         //select = findViewById(R.id.include_select);//加载查询页
         webView = (WebView) findViewById(R.id.web_view);//加载设置页
+        about_ous = findViewById(R.id.about_ous);//加载关于页
         Start_Money = (Button) findViewById(R.id.Button_Start);
         Button_Fresh = (Button) findViewById(R.id.Button_fresh);
         Input_Mess_Start = (EditText) findViewById(R.id.Input_Mess_Start);
@@ -1264,7 +1277,7 @@ public class MainActivity extends AppCompatActivity {
         this.bv = new BannerView(this, ADSize.BANNER, Constants.APPID,posId);
         // 注意：如果开发者的banner不是始终展示在屏幕中的话，请关闭自动刷新，否则将导致曝光率过低。
         // 并且应该自行处理：当banner广告区域出现在屏幕后，再手动loadAD。
-        bv.setRefresh(10);
+        bv.setRefresh(5);
 
         bv.setADListener(new AbstractBannerADListener() {
 

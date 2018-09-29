@@ -35,6 +35,11 @@
             layout="@layout/activity_config"
             android:visibility="gone">
     </include>
+        <include
+            android:id="@+id/about_ous"
+            layout="@layout/about_ous"
+            android:visibility="gone">
+        </include>
     </FrameLayout>
 
     <LinearLayout

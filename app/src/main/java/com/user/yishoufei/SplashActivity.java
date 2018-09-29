@@ -20,9 +20,12 @@ import android.widget.Toast;
 import com.qq.e.ads.splash.SplashAD;
 import com.qq.e.ads.splash.SplashADListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import com.user.yishoufei.Constants;
+
+import org.litepal.crud.DataSupport;
 
 /**
  * 这是demo工程的入口Activity，在这里会首次调用广点通的SDK。
@@ -34,6 +37,9 @@ public class SplashActivity extends Activity implements SplashADListener {
     private SplashAD splashAD;
     private ViewGroup container;
     private TextView skipView;
+    private RuleConfig ruleconfig;
+    private List<RuleConfig> list_ruleconfig;
+
     //private ImageView splashHolder;
     private static final String SKIP_TEXT = "点击跳过 %d";
 
@@ -166,7 +172,7 @@ public class SplashActivity extends Activity implements SplashADListener {
     public void onNoAD(int errorCode) {
         Log.i("AD_DEMO", "LoadSplashADFail, eCode=" + errorCode);
         /** 如果加载广告失败，则直接跳转 */
-        this.startActivity(new Intent(this, LoginActivity.class));
+        this.startActivity(new Intent(this, MainActivity.class));
         this.finish();
     }
 
@@ -176,11 +182,34 @@ public class SplashActivity extends Activity implements SplashADListener {
      */
     private void next() {
         if (canJump) {
-            this.startActivity(new Intent(this, LoginActivity.class));
+            ruleconfig = new RuleConfig();
+            list_ruleconfig = DataSupport.findAll(RuleConfig.class);
+            //如果没有设置配置项
+            if (null == list_ruleconfig || list_ruleconfig.size() == 0) {
+                DecimalFormat df = new DecimalFormat("#0.00");//保留2位小数
+//                    Double dou = Double.parseDouble(first_hour_edit.getText().toString());
+                //初始化默认配置白天07:00至19:00,免费分钟数0元首1小时收费1.5元每15分钟，1小时后2.25元每15分钟
+                //除了白天的时间其余的都是晚上时间，默认晚上免费分钟数0元首1小时每60分钟1元，1小时后每60分钟1元
+                ruleconfig.setFirst_hour(1);
+                ruleconfig.setFirst_yuan_hour(1.5);
+                ruleconfig.setFirst_min(15);
+                ruleconfig.setAfter_yuan_hour(2.25);
+                ruleconfig.setFreePrice(0.0);
+                ruleconfig.setDay_start_time("07:00");
+                ruleconfig.setDay_end_time("19:00");
+                ruleconfig.setN_FreePrice(0.0);
+                ruleconfig.setN_First_hour(1);
+                ruleconfig.setN_First_min(60);
+                ruleconfig.setN_First_yuan_hour(1);
+                ruleconfig.setN_After_yuan_hour(1);
+                ruleconfig.save();//更新配置表
+            this.startActivity(new Intent(this, MainActivity.class));
             this.finish();
         } else {
+                this.startActivity(new Intent(this, MainActivity.class));
             canJump = true;
         }
+    }
     }
 
     @Override

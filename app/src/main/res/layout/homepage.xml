@@ -34,6 +34,7 @@
                 layout="@layout/activity_config"
                 android:visibility="gone">
             </include>
+
         </FrameLayout>
 
 </LinearLayout>
