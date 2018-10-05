@@ -205,6 +205,7 @@ public class SplashActivity extends Activity implements SplashADListener {
                 ruleconfig.save();//更新配置表
             this.startActivity(new Intent(this, MainActivity.class));
             this.finish();
+            Toast.makeText(SplashActivity.this, "请到设置界面完成设置", Toast.LENGTH_LONG).show();
         } else {
                 this.startActivity(new Intent(this, MainActivity.class));
             canJump = true;

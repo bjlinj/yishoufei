@@ -6,6 +6,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -210,7 +212,21 @@ public class MainActivity extends AppCompatActivity {
     public String getuserID(){
         //userlist = DataSupport.findAll(UserName.class);
         //Log.d("userlist=0=0=0=",userlist.get(0).getUsername());
-          return   (model+carrier).replace(" ", "");
+          return   (model+"_"+carrier+"_"+getLocalVersionName(this)).replace(" ", "");
+    }
+//获取使用版本号名称
+    public static String getLocalVersionName(Context ctx) {
+        String localVersion = "";
+        try {
+            PackageInfo packageInfo = ctx.getApplicationContext()
+                    .getPackageManager()
+                    .getPackageInfo(ctx.getPackageName(), 0);
+            localVersion = packageInfo.versionName;
+            Log.d("本软件的版本名：" ,localVersion);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return localVersion;
     }
 
     //SQL查询方式
@@ -748,15 +764,19 @@ public class MainActivity extends AppCompatActivity {
                     //pay = df.format((unitprice)/60*(still_minutes-freeprice));//计算消费金额
 
                     if((still_minutes-freeprice)<first_hour_edit*60){
-                        pay=df.format((still_minutes-freeprice)*first_yuan_edit/first_min_edit);
-                        //pay=df.format(Math.ceil((still_minutes-freeprice)/first_min_edit)*first_yuan_edit);
+
+                        //pay=df.format((still_minutes-freeprice)*first_yuan_edit/first_min_edit);
+                        //(持续时间-免费时间)/单位分钟数*单位收费金额  有小数点的直接进一位
+                        pay=df.format(Math.ceil((still_minutes-freeprice)/first_min_edit)*first_yuan_edit);
                         sreachbyidlist.get(0).getCar_Num();
                         dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                                 + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
                                 "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
                         dialog.setCancelable(false);
                     }else{
-                       pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+((still_minutes-freeprice)-first_hour_edit*60)*after_yuan_edit/first_min_edit);
+                        //pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+((still_minutes-freeprice)-first_hour_edit*60)*after_yuan_edit/first_min_edit);
+                        //
+                        pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+Math.ceil(((still_minutes-freeprice)-first_hour_edit*60)/first_min_edit)*after_yuan_edit);
 //                        Log.d("1===first_yuan_edit:",first_yuan_edit+"");
 //                        Log.d("1===first_min_edit:",first_min_edit+"");
 //                        Log.d("1===first_hour_edit:",first_hour_edit+"");
@@ -791,14 +811,16 @@ public class MainActivity extends AppCompatActivity {
                         //pay = df.format((unitprice)/60*(still_minutes-freeprice));//计算消费金额
 
                         if((still_minutes-n_free_price_edit)<n_first_hour_edit*60){
-                            pay=df.format((still_minutes-n_free_price_edit)*n_first_yuan_edit/n_first_min_edit);
+                            //pay=df.format((still_minutes-n_free_price_edit)*n_first_yuan_edit/n_first_min_edit);
+                            pay=df.format(Math.ceil((still_minutes-n_free_price_edit)/n_first_min_edit)*n_first_yuan_edit);
+
                             sreachbyidlist.get(0).getCar_Num();
                             dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                                     + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
                                     "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
                             dialog.setCancelable(false);
                         }else{
-                            pay= df.format((n_first_yuan_edit/n_first_min_edit)*n_first_hour_edit*60+((still_minutes-n_free_price_edit)-n_first_hour_edit*60)*n_after_yuan_edit/n_first_min_edit);
+                            pay= df.format((n_first_yuan_edit/n_first_min_edit)*n_first_hour_edit*60+Math.ceil(((still_minutes-n_free_price_edit)-n_first_hour_edit*60)/n_first_min_edit)*n_after_yuan_edit);
                             Log.d("===n_first_yuan_edit:",n_first_yuan_edit+"");
                             Log.d("===n_first_min_edit:",n_first_min_edit+"");
                             Log.d("===first_hour_edit:",n_first_hour_edit+"");
