@@ -15,6 +15,7 @@ public class RuleConfig  extends DataSupport implements Serializable {
     private double  First_yuan_hour;//首1小时收费1.5元/X分钟
     private double  First_min;//首X小时收费1.5元/15分钟
     private double  After_yuan_hour;//X小时后X元/分钟
+    private double  After_hour_min;//白天x小时后x元after_hour_min分钟
    // private double  UnitPrice;//暂时设置一小时2元
     private double FreePrice;//设置免费分钟数
     private String Day_start_time; //设置白天开始时间
@@ -25,7 +26,41 @@ public class RuleConfig  extends DataSupport implements Serializable {
     private double  N_First_min;//晚上首X小时收费1.5元/15分钟
     private double  N_After_yuan_hour;//晚上X小时后X元/分钟
     private double N_FreePrice;//晚上设置免费分钟数
+    private double N_after_hour_min;//晚上x小时后x元after_hour_min分钟
+    private String is_open_post;//是否档位收费
+    private double max_cost;//单次最高收费金额
 
+    public String getIs_open_post() {
+        return is_open_post;
+    }
+
+    public void setIs_open_post(String is_open_post) {
+        this.is_open_post = is_open_post;
+    }
+
+    public double getMax_cost() {
+        return max_cost;
+    }
+
+    public void setMax_cost(double max_cost) {
+        this.max_cost = max_cost;
+    }
+
+    public double getAfter_hour_min() {
+        return After_hour_min;
+    }
+
+    public void setAfter_hour_min(double after_hour_min) {
+        After_hour_min = after_hour_min;
+    }
+
+    public double getN_after_hour_min() {
+        return N_after_hour_min;
+    }
+
+    public void setN_after_hour_min(double n_after_hour_min) {
+        N_after_hour_min = n_after_hour_min;
+    }
 
     public String getDay_start_time() {
         return Day_start_time;

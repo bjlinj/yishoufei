@@ -563,15 +563,19 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                        ruleconfig.setFirst_hour(1);
                        ruleconfig.setFirst_yuan_hour(1.5);
                        ruleconfig.setFirst_min(15);
-                       ruleconfig.setAfter_yuan_hour(2.25);
+                       ruleconfig.setAfter_yuan_hour(1);
                        ruleconfig.setFreePrice(0.0);
                        ruleconfig.setDay_start_time("07:00");
                        ruleconfig.setDay_end_time("19:00");
+                       ruleconfig.setAfter_hour_min(60);
                        ruleconfig.setN_FreePrice(0.0);
                        ruleconfig.setN_First_hour(1);
                        ruleconfig.setN_First_min(60);
                        ruleconfig.setN_First_yuan_hour(1);
                        ruleconfig.setN_After_yuan_hour(1);
+                       ruleconfig.setN_after_hour_min(60);
+                       ruleconfig.setIs_open_post("1");//默认为开启档位收费
+                       ruleconfig.setMax_cost(999);//最高单次收费金额，0表示不开启
                        ruleconfig.save();//更新配置表
                     startActivity(Main_intent);//跳到主页
 

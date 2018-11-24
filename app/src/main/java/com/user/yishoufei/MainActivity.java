@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText First_min_edit;
     private EditText After_yuan_hour;
     private TextView After_hour;
-    private TextView After_hour_min;
+    private EditText After_hour_min;
     private TextView Day_start_time; //设置白天开始时间
     private TextView Day_end_time;//设置白天结束时间
 
@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText  N_After_yuan_hour_edit;//晚上1小时后1元/60分钟
     private EditText N_FreePrice;//晚上设置免费分钟数
     private TextView N_After_hour;
-    private TextView N_After_hour_min;
+    private EditText N_After_hour_min;
     private TextView Search_start_date;
     private TextView Search_end_date;
     private RadioGroup Search_Steal;
@@ -142,6 +142,10 @@ public class MainActivity extends AppCompatActivity {
     private TabHost tabHost;
     private List<RuleConfig> list_ruleconfig;
     private TimePicker Get_Time;
+
+    private Switch is_open_post;//档位计费
+    public Boolean isopen_post;//是否开启档位收费
+    private TextView max_cost;//单次最高收费金额
 
 
     // 获取日历的一个对象
@@ -385,12 +389,12 @@ public class MainActivity extends AppCompatActivity {
         First_min_edit=(EditText)findViewById(R.id.first_min_edit);
         After_yuan_hour=(EditText)findViewById(R.id.after_yuan_edit);
         After_hour=(TextView)findViewById(R.id.after_hour);
-        After_hour_min=(TextView)findViewById(R.id.after_hour_min);
+        After_hour_min=(EditText)findViewById(R.id.after_hour_min);
         Get_Time=(TimePicker) findViewById(R.id.tpPicker);
         Day_start_time=(TextView)findViewById(R.id.day_start_date_fee);//设置白天开始时间
         Day_end_time=(TextView)findViewById(R.id.day_end_date_fee);//设置白天结束时间
         N_After_hour=(TextView)findViewById(R.id.n_after_hour);
-        N_After_hour_min=(TextView)findViewById(R.id.n_after_hour_min);
+        N_After_hour_min=(EditText)findViewById(R.id.n_after_hour_min);
         N_First_hour_edit=(EditText)findViewById(R.id.n_first_hour_edit);
         N_First_hour_edit.setFocusable(true);//获取焦点
         N_First_hour_edit.setFocusableInTouchMode(true);//获取焦点
@@ -404,6 +408,8 @@ public class MainActivity extends AppCompatActivity {
         Search_end_date=(TextView)findViewById(R.id.search_end_date) ;
         Search_Steal=(RadioGroup)findViewById(R.id.radioGroup);
         Get_Search=(Button)findViewById(R.id.getsearch);
+        is_open_post=(Switch)findViewById(R.id.is_open_post);
+        max_cost=(TextView)findViewById(R.id.max_cost);
 
 
 
@@ -716,6 +722,9 @@ public class MainActivity extends AppCompatActivity {
                 selfresh("");
             }
         });
+
+
+
         //添加列表点击事件
         tableListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -744,6 +753,9 @@ public class MainActivity extends AppCompatActivity {
                 double n_first_yuan_edit=Double.parseDouble(N_First_yuan_hour_edit.getText().toString());
                 double n_first_min_edit=Double.parseDouble(N_First_min_edit.getText().toString());
                 double n_after_yuan_edit=Double.parseDouble(N_After_yuan_hour_edit.getText().toString());
+                double max_cost_edit=Double.parseDouble(max_cost.getText().toString());
+                double after_hour_min=Double.parseDouble(After_hour_min.getText().toString());
+                double n_after_hour_min=Double.parseDouble(N_After_hour_min.getText().toString());
 
                 DecimalFormat df = new DecimalFormat("#0.00");
                 //Log.d("白天还是晚上",sreachbyidlist.get(0).getIs_day());
@@ -764,19 +776,30 @@ public class MainActivity extends AppCompatActivity {
                     //pay = df.format((unitprice)/60*(still_minutes-freeprice));//计算消费金额
 
                     if((still_minutes-freeprice)<first_hour_edit*60){
+                        if(isopen_post==true){
+                            pay=df.format(Math.ceil((still_minutes-freeprice)/first_min_edit)*first_yuan_edit);//档位计费
+                        }
+                        else{
+                            pay=df.format((still_minutes-freeprice)*first_yuan_edit/first_min_edit);
+                        }
 
-                        //pay=df.format((still_minutes-freeprice)*first_yuan_edit/first_min_edit);
-                        //(持续时间-免费时间)/单位分钟数*单位收费金额  有小数点的直接进一位
-                        pay=df.format(Math.ceil((still_minutes-freeprice)/first_min_edit)*first_yuan_edit);
+                        //pay=df.format(Math.ceil((still_minutes-freeprice)/first_min_edit)*first_yuan_edit);
                         sreachbyidlist.get(0).getCar_Num();
+                        if(Double.parseDouble(pay)>max_cost_edit){
+                            pay=max_cost_edit+"";
+                        }
                         dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                                 + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
                                 "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
                         dialog.setCancelable(false);
                     }else{
-                        //pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+((still_minutes-freeprice)-first_hour_edit*60)*after_yuan_edit/first_min_edit);
-                        //
-                        pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+Math.ceil(((still_minutes-freeprice)-first_hour_edit*60)/first_min_edit)*after_yuan_edit);
+                        if(isopen_post==true){
+                            pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+Math.ceil(((still_minutes-freeprice)-first_hour_edit*60)/after_hour_min)*after_yuan_edit);
+
+                        }else{
+                            pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+((still_minutes-freeprice)-first_hour_edit*60)*after_yuan_edit/after_hour_min);
+                        }
+
 //                        Log.d("1===first_yuan_edit:",first_yuan_edit+"");
 //                        Log.d("1===first_min_edit:",first_min_edit+"");
 //                        Log.d("1===first_hour_edit:",first_hour_edit+"");
@@ -785,6 +808,9 @@ public class MainActivity extends AppCompatActivity {
 //                        Log.d("1===first_hour_edit:",first_hour_edit+"");
 //                        Log.d("1===after_yuan_edit:",after_yuan_edit+"");
                        sreachbyidlist.get(0).getCar_Num();
+                        if(Double.parseDouble(pay)>max_cost_edit){
+                            pay=max_cost_edit+"";
+                        }
                         dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                                 + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
                                 "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
@@ -811,16 +837,27 @@ public class MainActivity extends AppCompatActivity {
                         //pay = df.format((unitprice)/60*(still_minutes-freeprice));//计算消费金额
 
                         if((still_minutes-n_free_price_edit)<n_first_hour_edit*60){
-                            //pay=df.format((still_minutes-n_free_price_edit)*n_first_yuan_edit/n_first_min_edit);
-                            pay=df.format(Math.ceil((still_minutes-n_free_price_edit)/n_first_min_edit)*n_first_yuan_edit);
+                            if(isopen_post==true){
+                                pay=df.format(Math.ceil((still_minutes-n_free_price_edit)/n_first_min_edit)*n_first_yuan_edit);
+                            }else{
+                                pay=df.format((still_minutes-n_free_price_edit)*n_first_yuan_edit/n_first_min_edit);
+                            }
 
                             sreachbyidlist.get(0).getCar_Num();
+                            if(Double.parseDouble(pay)>max_cost_edit){
+                                pay=max_cost_edit+"";
+                            }
                             dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                                     + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
                                     "\n\n免费分钟数为: "+freeprice+"分钟\n\n应收费用："+pay+"元");
                             dialog.setCancelable(false);
                         }else{
-                            pay= df.format((n_first_yuan_edit/n_first_min_edit)*n_first_hour_edit*60+Math.ceil(((still_minutes-n_free_price_edit)-n_first_hour_edit*60)/n_first_min_edit)*n_after_yuan_edit);
+                            if(isopen_post==true){
+                                pay= df.format((n_first_yuan_edit/n_first_min_edit)*n_first_hour_edit*60+Math.ceil(((still_minutes-n_free_price_edit)-n_first_hour_edit*60)/n_after_hour_min)*n_after_yuan_edit);
+                            }else{
+                                pay= df.format((n_first_yuan_edit/n_first_min_edit)*n_first_hour_edit*60+((still_minutes-n_free_price_edit)-n_first_hour_edit*60)*n_after_yuan_edit/n_after_hour_min);
+                            }
+
                             Log.d("===n_first_yuan_edit:",n_first_yuan_edit+"");
                             Log.d("===n_first_min_edit:",n_first_min_edit+"");
                             Log.d("===first_hour_edit:",n_first_hour_edit+"");
@@ -829,6 +866,9 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("===n_first_hour_edit:",n_first_hour_edit+"");
                             Log.d("===n_after_yuan_edit:",n_after_yuan_edit+"");
                             sreachbyidlist.get(0).getCar_Num();
+                            if(Double.parseDouble(pay)>max_cost_edit){
+                                pay=max_cost_edit+"";
+                            }
                             dialog.setMessage("\n车牌号码：" + list.get(0).getCar_Num() + "\n\n" + "开始时间：" + start
                                     + "\n\n" + "结束时间：" + end + "\n\n" + "持续时间：" + interval+
                                     "\n\n免费分钟数为: "+n_free_price_edit+"分钟\n\n应收费用："+pay+"元");
@@ -941,30 +981,30 @@ public class MainActivity extends AppCompatActivity {
                 After_hour.setText( First_hour_edit.getText().toString());//动态更新时间
             }
         });
-
-
-//白天光标动态更新
-        First_min_edit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                // TODO Auto-generated method stub
-                //这个应该是在改变的时候会做的动作吧，具体还没用到过。
-            }
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-                                          int arg3) {
-                // TODO Auto-generated method stub
-                //这是文本框改变之前会执行的动作
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                // TODO Auto-generated method stub
-                /*                *这是文本框改变之后 会执行的动作
-                 * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
-                 * 所以这里我们就需要加上数据的修改的动作了。*/
-                After_hour_min.setText(First_min_edit.getText().toString());//动态更新分钟数
-            }
-        });
+//
+//
+////白天光标动态更新
+//        First_min_edit.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+//                // TODO Auto-generated method stub
+//                //这个应该是在改变的时候会做的动作吧，具体还没用到过。
+//            }
+//            @Override
+//            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+//                                          int arg3) {
+//                // TODO Auto-generated method stub
+//                //这是文本框改变之前会执行的动作
+//            }
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                // TODO Auto-generated method stub
+//                /*                *这是文本框改变之后 会执行的动作
+//                 * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
+//                 * 所以这里我们就需要加上数据的修改的动作了。*/
+//                After_hour_min.setText(First_min_edit.getText().toString());//动态更新分钟数
+//            }
+//        });
 
 //晚上光标动态更新
         N_First_hour_edit.addTextChangedListener(new TextWatcher() {
@@ -988,29 +1028,47 @@ public class MainActivity extends AppCompatActivity {
                 N_After_hour.setText( N_First_hour_edit.getText().toString());//动态更新时间
             }
         });
+//
+////晚上光标动态更新
+//        N_First_min_edit.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+//                // TODO Auto-generated method stub
+//                //这个应该是在改变的时候会做的动作吧，具体还没用到过。
+//            }
+//            @Override
+//            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
+//                                          int arg3) {
+//                // TODO Auto-generated method stub
+//                //这是文本框改变之前会执行的动作
+//            }
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                // TODO Auto-generated method stub
+//                /*                *这是文本框改变之后 会执行的动作
+//                 * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
+//                 * 所以这里我们就需要加上数据的修改的动作了。*/
+//                N_After_hour_min.setText(N_First_min_edit.getText().toString());//动态更新分钟数
+//            }
+//        });
+        //是否档位收费开关事件
+        is_open_post.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    Toast.makeText(getApplicationContext(), "状态为开", Toast.LENGTH_SHORT).show();
+                    isopen_post=true;
 
-//晚上光标动态更新
-        N_First_min_edit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                // TODO Auto-generated method stub
-                //这个应该是在改变的时候会做的动作吧，具体还没用到过。
-            }
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-                                          int arg3) {
-                // TODO Auto-generated method stub
-                //这是文本框改变之前会执行的动作
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-                // TODO Auto-generated method stub
-                /*                *这是文本框改变之后 会执行的动作
-                 * 因为我们要做的就是，在文本框改变的同时，我们的listview的数据也进行相应的变动，并且如一的显示在界面上。
-                 * 所以这里我们就需要加上数据的修改的动作了。*/
-                N_After_hour_min.setText(N_First_min_edit.getText().toString());//动态更新分钟数
+                }
+
+                else{
+                    Toast.makeText(getApplicationContext(), "状态为关", Toast.LENGTH_SHORT).show();
+                    isopen_post=false;
+                }
+
             }
         });
+
 
         Set_Button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1022,13 +1080,21 @@ public class MainActivity extends AppCompatActivity {
                 String first_yuan_edit=First_yuan_edit.getText().toString();
                 String first_min_edit=First_min_edit.getText().toString();
                 String after_yuan_hour=After_yuan_hour.getText().toString();
+                String after_hour_min=After_hour_min.getText().toString();
                 String n_free_price_edit=N_FreePrice.getText().toString();
                 String n_first_hour_edit=N_First_hour_edit.getText().toString();
                 String n_first_yuan_edit=N_First_yuan_hour_edit.getText().toString();
                 String n_first_min_edit=N_First_min_edit.getText().toString();
                 String n_after_yuan_edit=N_After_yuan_hour_edit.getText().toString();
+                String n_after_hour_min=N_After_hour_min.getText().toString();
                 String day_start_date_fee=Day_start_time.getText().toString();
                 String day_end_date_fee=Day_end_time.getText().toString();
+                String  get_max_cost;
+                if(max_cost.getText().toString()==null||max_cost.getText().toString().equals("")){
+                       get_max_cost="999";
+                }else{
+                    get_max_cost=max_cost.getText().toString();
+                }
 
 
 
@@ -1036,7 +1102,8 @@ public class MainActivity extends AppCompatActivity {
                 if(config_free_Price==null || config_free_Price.equals("")||first_hour_edit==null || first_hour_edit.equals("")||
                 first_yuan_edit==null || first_yuan_edit.equals("")||first_min_edit==null || first_min_edit.equals("") ||after_yuan_hour==null
                         ||after_yuan_hour.equals("")||n_free_price_edit==null||n_free_price_edit.equals("")||n_first_hour_edit==null||n_first_hour_edit.equals("")
-                        ||n_first_yuan_edit==null||n_first_yuan_edit.equals("")||n_first_min_edit==null||n_first_min_edit.equals("")||n_after_yuan_edit==null||n_after_yuan_edit.equals("")){
+                        ||n_first_yuan_edit==null||n_first_yuan_edit.equals("")||n_first_min_edit==null||n_first_min_edit.equals("")||n_after_yuan_edit==null||n_after_yuan_edit.equals("")
+                        ||after_hour_min==null||after_hour_min.equals("")||n_after_hour_min==null||n_after_hour_min.equals("")){
                     Toast.makeText(MainActivity.this, "请输入数值", Toast.LENGTH_SHORT).show();
                 }else {
                     ruleconfig.setFreePrice(Double.parseDouble(config_free_Price));
@@ -1044,15 +1111,22 @@ public class MainActivity extends AppCompatActivity {
                     ruleconfig.setFirst_yuan_hour(Double.parseDouble(first_yuan_edit));
                     ruleconfig.setFirst_min(Double.parseDouble(first_min_edit));
                     ruleconfig.setAfter_yuan_hour(Double.parseDouble(after_yuan_hour));
+                    ruleconfig.setAfter_hour_min(Double.parseDouble(after_hour_min));
                     ruleconfig.setN_FreePrice(Double.parseDouble(n_free_price_edit));
                     ruleconfig.setN_First_yuan_hour(Double.parseDouble(n_first_hour_edit));
                     ruleconfig.setN_First_hour(Double.parseDouble(n_first_yuan_edit));
                     ruleconfig.setN_First_min(Double.parseDouble(n_first_min_edit));
                     ruleconfig.setN_After_yuan_hour(Double.parseDouble(n_after_yuan_edit));
+                    ruleconfig.setN_after_hour_min(Double.parseDouble(n_after_hour_min));
                     ruleconfig.setDay_start_time(day_start_date_fee);
                     ruleconfig.setDay_end_time(day_end_date_fee);
+                    if(isopen_post==true){
+                        ruleconfig.setIs_open_post("1");
+                    }else{
+                        ruleconfig.setIs_open_post("0");
+                    }
+                    ruleconfig.setMax_cost(Double.parseDouble(get_max_cost));
 
-                }
 
                 B_isset_Right_time B_isset_Right_time =new B_isset_Right_time();
                 try {
@@ -1084,7 +1158,7 @@ public class MainActivity extends AppCompatActivity {
                 //Main_intent.putExtra("confi_free_price", ruleconfig.getFreePrice() + "");
                // startActivity(Main_intent);//跳到主页
             }
-        });
+        }});
 
 //搜索页配置
         //搜索开始时间
@@ -1190,17 +1264,45 @@ public class MainActivity extends AppCompatActivity {
             First_yuan_edit.setText(rc.getFirst_yuan_hour()+"");
             First_min_edit.setText(rc.getFirst_min()+"");
             After_yuan_hour.setText(rc.getAfter_yuan_hour()+"");
+            if(rc.getAfter_hour_min()==0.0){
+                After_hour_min.setText(First_min_edit.getText().toString());
+            }else{
+                After_hour_min.setText(rc.getAfter_hour_min()+"");
+            }
+
             After_hour.setText( First_hour_edit.getText().toString());
-            After_hour_min.setText(First_min_edit.getText().toString());
+
             N_FreePrice.setText(rc.getN_FreePrice()+"");
             N_First_hour_edit.setText(rc.getN_First_hour()+"");
             N_First_yuan_hour_edit.setText(rc.getN_First_yuan_hour()+"");
             N_First_min_edit.setText(rc.getN_First_min()+"");
             N_After_yuan_hour_edit.setText(rc.getN_After_yuan_hour()+"");
             N_After_hour.setText(N_First_hour_edit.getText().toString());
-            N_After_hour_min.setText(N_First_min_edit.getText().toString());
+            if(rc.getN_after_hour_min()==0.0){
+                N_After_hour_min.setText(N_First_min_edit.getText().toString());
+                Log.d("N_After_hour_min1",N_First_min_edit.getText().toString()+"");
+            }else{
+                N_After_hour_min.setText(rc.getN_after_hour_min()+"");
+                Log.d("N_After_hour_min2",rc.getN_after_hour_min()+"");
+            }
             Day_start_time.setText(rc.getDay_start_time());
             Day_end_time.setText(rc.getDay_end_time());
+            //判断是否选择档位收费
+            if(rc.getIs_open_post()==null||rc.getIs_open_post().equals("1")){
+                is_open_post.setChecked(true);
+                isopen_post=true;
+            }else {
+                is_open_post.setChecked(false);
+                isopen_post=false;
+            }
+            //单次最大收费金额
+            if(rc.getMax_cost()==0.0){//如果是初始值，那么给一个默认的999
+                max_cost.setText("999");
+            }else{
+                max_cost.setText(rc.getMax_cost()+"");
+            }
+
+
         }
     }
 
