@@ -125,11 +125,11 @@
 
         <EditText
             android:id="@+id/free_price_edit"
-            android:layout_width="40dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:digits="0123456789."
-            android:maxLength="3"
             android:inputType="number"
+            android:maxLength="3"
             android:text="0.0" />
 
         <TextView
@@ -153,46 +153,30 @@
 
         <EditText
             android:id="@+id/first_hour_edit"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:digits="0123456789."
-            android:maxLength="3"
-            android:inputType="number"
-            android:text="1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="小时收费(" />
-        <EditText
-            android:id="@+id/first_yuan_edit"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:digits="0123456789."
-            android:maxLength="3"
-            android:inputType="number"
-            android:text="1.5" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="元" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="每" />
-        <EditText
-            android:id="@+id/first_min_edit"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:digits="0123456789."
             android:maxLength="4"
             android:inputType="number"
-            android:text="15" />
+            android:text="60" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="分钟)" />
+            android:text="分钟收" />
+
+        <EditText
+            android:id="@+id/first_yuan_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:digits="0123456789."
+            android:inputType="number"
+            android:maxLength="3"
+            android:text="1.5" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="元" />
     </LinearLayout>
 
 
@@ -205,13 +189,13 @@
             android:id="@+id/after_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1"
+            android:text="60"
             android:textSize="16sp" />
         <TextView
             android:id="@+id/after_hour_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="小时后收费("
+            android:text="分钟后，"
             android:textSize="16sp" />
 
         <EditText
@@ -229,7 +213,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="每" />
+            android:textSize="20dp"
+            android:text="/" />
 
         <EditText
             android:id="@+id/after_hour_min"
@@ -242,7 +227,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="分钟)" />
+            android:text="分钟" />
     </LinearLayout>
 
 
@@ -276,7 +261,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="晚上收费标准(白天以外的时间):"
+            android:text="晚上(白天以外的时间)收费标准:"
             android:textColor="#6495ed"
             android:textSize="20sp" />
 
@@ -298,11 +283,11 @@
 
         <EditText
             android:id="@+id/n_free_price_edit"
-            android:layout_width="40dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:digits="0123456789."
-            android:maxLength="4"
             android:inputType="number"
+            android:maxLength="4"
             android:text="0.0" />
 
         <TextView
@@ -326,46 +311,30 @@
 
         <EditText
             android:id="@+id/n_first_hour_edit"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:digits="0123456789."
-            android:maxLength="3"
-            android:inputType="number"
-            android:text="1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="小时收费(" />
-        <EditText
-            android:id="@+id/n_first_yuan_edit"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:digits="0123456789."
-            android:maxLength="3"
-            android:inputType="number"
-            android:text="1" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="元" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="每" />
-        <EditText
-            android:id="@+id/n_first_min_edit"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:digits="0123456789."
-            android:maxLength="4"
             android:inputType="number"
+            android:maxLength="4"
             android:text="60" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="分钟)" />
+            android:text="分钟收" />
+
+        <EditText
+            android:id="@+id/n_first_yuan_edit"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:digits="0123456789."
+            android:inputType="number"
+            android:maxLength="3"
+            android:text="1" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="元" />
     </LinearLayout>
 
 
@@ -384,7 +353,7 @@
             android:id="@+id/n_after_hour_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="小时后收费("
+            android:text="分钟后，"
             android:textSize="16sp" />
 
         <EditText
@@ -402,7 +371,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="每" />
+            android:textSize="20dp"
+            android:text="/" />
         <EditText
             android:id="@+id/n_after_hour_min"
             android:layout_width="50dp"
@@ -414,7 +384,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="分钟)" />
+            android:text="分钟" />
     </LinearLayout>
 
 

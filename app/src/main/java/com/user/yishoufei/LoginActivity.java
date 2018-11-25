@@ -560,9 +560,9 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
 //                    Double dou = Double.parseDouble(first_hour_edit.getText().toString());
                     //初始化默认配置白天07:00至19:00,免费分钟数0元首1小时收费1.5元每15分钟，1小时后2.25元每15分钟
                     //除了白天的时间其余的都是晚上时间，默认晚上免费分钟数0元首1小时每60分钟1元，1小时后每60分钟1元
-                       ruleconfig.setFirst_hour(1);
+                       ruleconfig.setFirst_hour(60);
                        ruleconfig.setFirst_yuan_hour(1.5);
-                       ruleconfig.setFirst_min(15);
+                       //ruleconfig.setFirst_min(15);
                        ruleconfig.setAfter_yuan_hour(1);
                        ruleconfig.setFreePrice(0.0);
                        ruleconfig.setDay_start_time("07:00");
@@ -570,7 +570,6 @@ public class LoginActivity extends AppCompatActivity/* implements LoaderCallback
                        ruleconfig.setAfter_hour_min(60);
                        ruleconfig.setN_FreePrice(0.0);
                        ruleconfig.setN_First_hour(1);
-                       ruleconfig.setN_First_min(60);
                        ruleconfig.setN_First_yuan_hour(1);
                        ruleconfig.setN_After_yuan_hour(1);
                        ruleconfig.setN_after_hour_min(60);

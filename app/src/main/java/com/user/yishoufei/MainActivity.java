@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText Config_Free_Price;
     private EditText First_hour_edit;
     private EditText First_yuan_edit;
-    private EditText First_min_edit;
+    //private EditText First_min_edit;
     private EditText After_yuan_hour;
     private TextView After_hour;
     private EditText After_hour_min;
@@ -386,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
         //获取焦点   https://blog.csdn.net/aaawqqq/article/details/50259713
          First_hour_edit=(EditText)findViewById(R.id.first_hour_edit);
         First_yuan_edit=(EditText)findViewById(R.id.first_yuan_edit);
-        First_min_edit=(EditText)findViewById(R.id.first_min_edit);
+        //First_min_edit=(EditText)findViewById(R.id.first_min_edit);
         After_yuan_hour=(EditText)findViewById(R.id.after_yuan_edit);
         After_hour=(TextView)findViewById(R.id.after_hour);
         After_hour_min=(EditText)findViewById(R.id.after_hour_min);
@@ -399,9 +399,9 @@ public class MainActivity extends AppCompatActivity {
         N_First_hour_edit.setFocusable(true);//获取焦点
         N_First_hour_edit.setFocusableInTouchMode(true);//获取焦点
         N_First_yuan_hour_edit=(EditText)findViewById(R.id.n_first_yuan_edit);
-        N_First_min_edit=(EditText)findViewById(R.id.n_first_min_edit);
-        N_First_min_edit.setFocusable(true);//获取焦点
-        N_First_min_edit.setFocusableInTouchMode(true);//获取焦点
+       // N_First_min_edit=(EditText)findViewById(R.id.n_first_min_edit);
+        //N_First_min_edit.setFocusable(true);//获取焦点
+        //N_First_min_edit.setFocusableInTouchMode(true);//获取焦点
         N_After_yuan_hour_edit=(EditText)findViewById(R.id.n_after_yuan_edit);
         N_FreePrice=(EditText)findViewById(R.id.n_free_price_edit);
         Search_start_date=(TextView)findViewById(R.id.search_start_date) ;
@@ -746,12 +746,12 @@ public class MainActivity extends AppCompatActivity {
                 double freeprice=Double.parseDouble(Config_Free_Price.getText().toString());
                 double first_hour_edit = Double.parseDouble(First_hour_edit.getText().toString());
                 double first_yuan_edit=Double.parseDouble(First_yuan_edit.getText().toString());
-                double first_min_edit=Double.parseDouble(First_min_edit.getText().toString());
+                //double first_min_edit=Double.parseDouble(First_min_edit.getText().toString());
                 double after_yuan_edit=Double.parseDouble(After_yuan_hour.getText().toString());
                 double n_free_price_edit=Double.parseDouble(N_FreePrice.getText().toString());
                 double n_first_hour_edit=Double.parseDouble(N_First_hour_edit.getText().toString());
                 double n_first_yuan_edit=Double.parseDouble(N_First_yuan_hour_edit.getText().toString());
-                double n_first_min_edit=Double.parseDouble(N_First_min_edit.getText().toString());
+                //double n_first_min_edit=Double.parseDouble(N_First_min_edit.getText().toString());
                 double n_after_yuan_edit=Double.parseDouble(N_After_yuan_hour_edit.getText().toString());
                 double max_cost_edit=Double.parseDouble(max_cost.getText().toString());
                 double after_hour_min=Double.parseDouble(After_hour_min.getText().toString());
@@ -775,12 +775,15 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     //pay = df.format((unitprice)/60*(still_minutes-freeprice));//计算消费金额
 
-                    if((still_minutes-freeprice)<first_hour_edit*60){
+                    if((still_minutes-freeprice)<first_hour_edit){
                         if(isopen_post==true){
-                            pay=df.format(Math.ceil((still_minutes-freeprice)/first_min_edit)*first_yuan_edit);//档位计费
+                            //pay=df.format(Math.ceil((still_minutes-freeprice)/first_min_edit)*first_yuan_edit);//档位计费
+                            pay=df.format(first_yuan_edit);//小于首X分钟按照首X分钟收费
                         }
                         else{
-                            pay=df.format((still_minutes-freeprice)*first_yuan_edit/first_min_edit);
+                            //pay=df.format((still_minutes-freeprice)*first_yuan_edit/first_min_edit);
+                            pay=df.format((still_minutes-freeprice)*first_yuan_edit/first_hour_edit);
+
                         }
 
                         //pay=df.format(Math.ceil((still_minutes-freeprice)/first_min_edit)*first_yuan_edit);
@@ -794,10 +797,11 @@ public class MainActivity extends AppCompatActivity {
                         dialog.setCancelable(false);
                     }else{
                         if(isopen_post==true){
-                            pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+Math.ceil(((still_minutes-freeprice)-first_hour_edit*60)/after_hour_min)*after_yuan_edit);
-
+                            //pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+Math.ceil(((still_minutes-freeprice)-first_hour_edit*60)/after_hour_min)*after_yuan_edit);
+                             pay=df.format(first_yuan_edit+Math.ceil(((still_minutes-freeprice)-first_hour_edit)/after_hour_min)*after_yuan_edit);
                         }else{
-                            pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+((still_minutes-freeprice)-first_hour_edit*60)*after_yuan_edit/after_hour_min);
+                            //pay= df.format((first_yuan_edit/first_min_edit)*first_hour_edit*60+((still_minutes-freeprice)-first_hour_edit*60)*after_yuan_edit/after_hour_min);
+                            pay= df.format(first_yuan_edit+((still_minutes-freeprice)-first_hour_edit)*after_yuan_edit/after_hour_min);
                         }
 
 //                        Log.d("1===first_yuan_edit:",first_yuan_edit+"");
@@ -836,11 +840,11 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         //pay = df.format((unitprice)/60*(still_minutes-freeprice));//计算消费金额
 
-                        if((still_minutes-n_free_price_edit)<n_first_hour_edit*60){
+                        if((still_minutes-n_free_price_edit)<n_first_hour_edit){
                             if(isopen_post==true){
-                                pay=df.format(Math.ceil((still_minutes-n_free_price_edit)/n_first_min_edit)*n_first_yuan_edit);
+                                pay=df.format(n_first_yuan_edit);
                             }else{
-                                pay=df.format((still_minutes-n_free_price_edit)*n_first_yuan_edit/n_first_min_edit);
+                                pay=df.format((still_minutes-n_free_price_edit)*n_first_yuan_edit/n_first_hour_edit);
                             }
 
                             sreachbyidlist.get(0).getCar_Num();
@@ -853,18 +857,11 @@ public class MainActivity extends AppCompatActivity {
                             dialog.setCancelable(false);
                         }else{
                             if(isopen_post==true){
-                                pay= df.format((n_first_yuan_edit/n_first_min_edit)*n_first_hour_edit*60+Math.ceil(((still_minutes-n_free_price_edit)-n_first_hour_edit*60)/n_after_hour_min)*n_after_yuan_edit);
+                                pay= df.format(n_first_yuan_edit+Math.ceil(((still_minutes-n_free_price_edit)-n_first_hour_edit)/n_after_hour_min)*n_after_yuan_edit);
                             }else{
-                                pay= df.format((n_first_yuan_edit/n_first_min_edit)*n_first_hour_edit*60+((still_minutes-n_free_price_edit)-n_first_hour_edit*60)*n_after_yuan_edit/n_after_hour_min);
+                                pay= df.format(n_first_yuan_edit+((still_minutes-n_free_price_edit)-n_first_hour_edit)*n_after_yuan_edit/n_after_hour_min);
                             }
 
-                            Log.d("===n_first_yuan_edit:",n_first_yuan_edit+"");
-                            Log.d("===n_first_min_edit:",n_first_min_edit+"");
-                            Log.d("===first_hour_edit:",n_first_hour_edit+"");
-                            Log.d("===still_minutes:",still_minutes+"");
-                            Log.d("===n_free_price_edit:",n_free_price_edit+"");
-                            Log.d("===n_first_hour_edit:",n_first_hour_edit+"");
-                            Log.d("===n_after_yuan_edit:",n_after_yuan_edit+"");
                             sreachbyidlist.get(0).getCar_Num();
                             if(Double.parseDouble(pay)>max_cost_edit){
                                 pay=max_cost_edit+"";
@@ -1076,15 +1073,16 @@ public class MainActivity extends AppCompatActivity {
                 RuleConfig ruleconfig =  new RuleConfig();
                 //String config_str  = Config_Price.getText().toString();
                 String config_free_Price =Config_Free_Price.getText().toString();
+
                 String first_hour_edit = First_hour_edit.getText().toString();
                 String first_yuan_edit=First_yuan_edit.getText().toString();
-                String first_min_edit=First_min_edit.getText().toString();
+                //String first_min_edit=First_min_edit.getText().toString();
                 String after_yuan_hour=After_yuan_hour.getText().toString();
                 String after_hour_min=After_hour_min.getText().toString();
                 String n_free_price_edit=N_FreePrice.getText().toString();
                 String n_first_hour_edit=N_First_hour_edit.getText().toString();
                 String n_first_yuan_edit=N_First_yuan_hour_edit.getText().toString();
-                String n_first_min_edit=N_First_min_edit.getText().toString();
+                //String n_first_min_edit=N_First_min_edit.getText().toString();
                 String n_after_yuan_edit=N_After_yuan_hour_edit.getText().toString();
                 String n_after_hour_min=N_After_hour_min.getText().toString();
                 String day_start_date_fee=Day_start_time.getText().toString();
@@ -1100,24 +1098,28 @@ public class MainActivity extends AppCompatActivity {
 
                 //Log.d("config_str",config_str+"======");
                 if(config_free_Price==null || config_free_Price.equals("")||first_hour_edit==null || first_hour_edit.equals("")||
-                first_yuan_edit==null || first_yuan_edit.equals("")||first_min_edit==null || first_min_edit.equals("") ||after_yuan_hour==null
+                first_yuan_edit==null || first_yuan_edit.equals("") ||after_yuan_hour==null
                         ||after_yuan_hour.equals("")||n_free_price_edit==null||n_free_price_edit.equals("")||n_first_hour_edit==null||n_first_hour_edit.equals("")
-                        ||n_first_yuan_edit==null||n_first_yuan_edit.equals("")||n_first_min_edit==null||n_first_min_edit.equals("")||n_after_yuan_edit==null||n_after_yuan_edit.equals("")
+                        ||n_first_yuan_edit==null||n_first_yuan_edit.equals("")||n_after_yuan_edit==null||n_after_yuan_edit.equals("")
                         ||after_hour_min==null||after_hour_min.equals("")||n_after_hour_min==null||n_after_hour_min.equals("")){
                     Toast.makeText(MainActivity.this, "请输入数值", Toast.LENGTH_SHORT).show();
                 }else {
                     ruleconfig.setFreePrice(Double.parseDouble(config_free_Price));
+                    //ruleconfig.setFreePrice(0);
+                    Log.d("config_free_Price==",config_free_Price+"");
+                    Log.d("config_free_Price=",ruleconfig.getFreePrice()+"");
                     ruleconfig.setFirst_hour(Double.parseDouble(first_hour_edit));
                     ruleconfig.setFirst_yuan_hour(Double.parseDouble(first_yuan_edit));
-                    ruleconfig.setFirst_min(Double.parseDouble(first_min_edit));
+                    //ruleconfig.setFirst_min(Double.parseDouble(first_min_edit));
                     ruleconfig.setAfter_yuan_hour(Double.parseDouble(after_yuan_hour));
                     ruleconfig.setAfter_hour_min(Double.parseDouble(after_hour_min));
                     ruleconfig.setN_FreePrice(Double.parseDouble(n_free_price_edit));
-                    ruleconfig.setN_First_yuan_hour(Double.parseDouble(n_first_hour_edit));
-                    ruleconfig.setN_First_hour(Double.parseDouble(n_first_yuan_edit));
-                    ruleconfig.setN_First_min(Double.parseDouble(n_first_min_edit));
+                    ruleconfig.setN_First_yuan_hour(Double.parseDouble(n_first_yuan_edit));
+                    ruleconfig.setN_First_hour(Double.parseDouble(n_first_hour_edit));
+                    //ruleconfig.setN_First_min(Double.parseDouble(n_first_min_edit));
                     ruleconfig.setN_After_yuan_hour(Double.parseDouble(n_after_yuan_edit));
                     ruleconfig.setN_after_hour_min(Double.parseDouble(n_after_hour_min));
+                    Log.d("n_after_hour_min",n_after_hour_min);
                     ruleconfig.setDay_start_time(day_start_date_fee);
                     ruleconfig.setDay_end_time(day_end_date_fee);
                     if(isopen_post==true){
@@ -1132,7 +1134,13 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Boolean is_right_set = B_isset_Right_time.is_right_set(day_start_date_fee,day_end_date_fee);
                     if(is_right_set){
-                        ruleconfig.updateAll();
+                        if(ruleconfig.getFreePrice()==0){
+                            ruleconfig.setToDefault("FreePrice");//LitePal不支持直接update默认值，需要通过默认的方法
+                        }
+                        if(ruleconfig.getN_FreePrice()==0){
+                            ruleconfig.setToDefault("N_FreePrice");//LitePal不支持直接update默认值，需要通过默认的方法
+                        }
+                        ruleconfig.updateAll();//跟新新数据库
                         Intent Main_intent = new Intent(MainActivity.this, MainActivity.class);
                         startActivity(Main_intent);
                         //fresh();
@@ -1149,8 +1157,8 @@ public class MainActivity extends AppCompatActivity {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
-                ruleconfig.updateAll();//跟新新数据库
+                //Log.d("ruleconfig.getFreePrice",ruleconfig.getFreePrice()+"");
+                //ruleconfig.updateAll();//跟新新数据库
                // b_config_all=true;//修改设置页面
                 //Intent Main_intent = new Intent(MainActivity.this, MainActivity.class);
                 //把设置好的参数带到主页
@@ -1260,31 +1268,23 @@ public class MainActivity extends AppCompatActivity {
         list_ruleconfig = DataSupport.findAll(RuleConfig.class);
         for (RuleConfig rc : list_ruleconfig) {
             Config_Free_Price.setText(rc.getFreePrice()+"");
+            Log.d("config_free_Price===",rc.getFreePrice()+""+"");
             First_hour_edit.setText(rc.getFirst_hour()+"");
             First_yuan_edit.setText(rc.getFirst_yuan_hour()+"");
-            First_min_edit.setText(rc.getFirst_min()+"");
+            //First_min_edit.setText(rc.getFirst_min()+"");
             After_yuan_hour.setText(rc.getAfter_yuan_hour()+"");
-            if(rc.getAfter_hour_min()==0.0){
-                After_hour_min.setText(First_min_edit.getText().toString());
-            }else{
-                After_hour_min.setText(rc.getAfter_hour_min()+"");
-            }
+            After_hour_min.setText(rc.getAfter_hour_min()+"");
 
             After_hour.setText( First_hour_edit.getText().toString());
 
             N_FreePrice.setText(rc.getN_FreePrice()+"");
             N_First_hour_edit.setText(rc.getN_First_hour()+"");
             N_First_yuan_hour_edit.setText(rc.getN_First_yuan_hour()+"");
-            N_First_min_edit.setText(rc.getN_First_min()+"");
+            //N_First_min_edit.setText(rc.getN_First_min()+"");
             N_After_yuan_hour_edit.setText(rc.getN_After_yuan_hour()+"");
             N_After_hour.setText(N_First_hour_edit.getText().toString());
-            if(rc.getN_after_hour_min()==0.0){
-                N_After_hour_min.setText(N_First_min_edit.getText().toString());
-                Log.d("N_After_hour_min1",N_First_min_edit.getText().toString()+"");
-            }else{
-                N_After_hour_min.setText(rc.getN_after_hour_min()+"");
-                Log.d("N_After_hour_min2",rc.getN_after_hour_min()+"");
-            }
+            N_After_hour_min.setText(rc.getN_after_hour_min()+"");
+
             Day_start_time.setText(rc.getDay_start_time());
             Day_end_time.setText(rc.getDay_end_time());
             //判断是否选择档位收费
@@ -1351,7 +1351,6 @@ public class MainActivity extends AppCompatActivity {
         Gson gs = new Gson();
         final String objectStr = gs.toJson(object);
         final String postinhttp=posthttp;
-        Log.d("objectStr=1=1=12=2",objectStr);
         new Thread(new Runnable() {
             HttpUtil HttpUtil = new HttpUtil();
             @Override
