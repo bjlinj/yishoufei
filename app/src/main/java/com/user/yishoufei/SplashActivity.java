@@ -191,7 +191,7 @@ public class SplashActivity extends Activity implements SplashADListener {
                 //初始化默认配置白天07:00至19:00,免费分钟数0元首1小时收费1.5元每15分钟，1小时后2.25元每15分钟
                 //除了白天的时间其余的都是晚上时间，默认晚上免费分钟数0元首1小时每60分钟1元，1小时后每60分钟1元
                 ruleconfig.setFirst_hour(60);
-                ruleconfig.setFirst_yuan_hour(2);
+                ruleconfig.setFirst_yuan_hour(3);
                 //ruleconfig.setFirst_min(15);
                 ruleconfig.setAfter_yuan_hour(1);
                 ruleconfig.setFreePrice(0.0);
